@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbity.js Playground</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <style>
+      body {
+        font-family: "Inter", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        background-color: #0f1123;
+        color: #f5f7fa;
+      }
+
+      header {
+        background: linear-gradient(135deg, #2a3eb1, #1c1e2a);
+        color: #f5f7fa;
+        width: 100%;
+        padding: 20px 0;
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      canvas {
+        width: 100%;
+        max-width: 800px;
+        height: auto;
+        border: 1px solid #3a3a4f;
+        margin: 20px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        background-color: #1e1e2f;
+      }
+
+      .controls {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+        width: 90%;
+        max-width: 800px;
+        background: #1c1e2a;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .controls label {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #f5f7fa;
+      }
+
+      .controls input[type="range"],
+      .controls input[type="text"],
+      .controls input[type="color"],
+      .controls select {
+        margin-top: 5px;
+        padding: 8px;
+        font-size: 0.9rem;
+        border: 1px solid #3a3a4f;
+        border-radius: 4px;
+        background-color: #1e1e2f;
+        color: #f5f7fa;
+      }
+
+      .controls select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5f7fa'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 16px;
+      }
+
+      .controls button {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #0f1123;
+        background-color: #ffc845;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .controls button:hover {
+        background-color: #2a3eb1;
+        color: #f5f7fa;
+        transform: scale(1.05);
+      }
+
+      .tag-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .code-output {
+        margin-top: 20px;
+        padding: 20px;
+        background: #1e1e2f;
+        border: 1px solid #3a3a4f;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 800px;
+        font-family: "JetBrains Mono", monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: #dcdcdc;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .code-output::before {
+        content: "/* Code goes here */";
+        display: block;
+        color: #757575;
+        margin-bottom: 10px;
+      }
+
+      footer {
+        margin-top: 20px;
+        font-size: 0.8rem;
+        color: #f5f7fa;
+        text-align: center;
+        padding: 10px 0;
+        background: linear-gradient(135deg, #2a3eb1, #1c1e2a);
+        width: 100%;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      input,
+      select,
+      button {
+        transition: all 0.3s ease;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: #ffc845;
+        box-shadow: 0 0 5px rgba(255, 200, 69, 0.5);
+      }
+
+      @media (max-width: 768px) {
+        canvas {
+          width: 100%;
+          height: auto;
+        }
+
+        .controls {
+          width: 100%;
+          padding: 10px;
+        }
+      }
+
+      .controls-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .controls-group label {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .shape-preview {
+        margin-top: 10px;
+        padding: 10px;
+        background: #1c1e2a;
+        border: 1px solid #3a3a4f;
+        border-radius: 8px;
+        color: #f5f7fa;
+        font-size: 0.9rem;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .tag-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        padding: 10px;
+        background: #1c1e2a;
+        border: 1px solid #3a3a4f;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .tag-preview span {
+        padding: 5px 10px;
+        border-radius: 4px;
+        background-color: #3a3a4f;
+        color: #f5f7fa;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border: 1px solid #444;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src="logo.png"
+        alt="Orbity.js Logo"
+        style="height: 40px; margin-right: 10px"
+      />
+      Orbity.js Playground
+    </header>
+    <canvas id="orbityCanvas" width="800" height="600"></canvas>
+    <div class="controls">
+      <label title="Adjust the radius of the tag cloud.">
+        Radius:
+        <input type="range" id="radiusControl" min="1" max="400" value="200" />
+      </label>
+      <label title="Set the rotation speed of the tag cloud.">
+        Speed:
+        <input type="range" id="speedControl" min="1" max="20" value="1" />
+      </label>
+      <label title="Control the easing factor for smooth rotation.">
+        Easing:
+        <input
+          type="range"
+          id="easingControl"
+          min="0.1"
+          max="2"
+          step="0.1"
+          value="0.1"
+        />
+      </label>
+      <label title="Set the maximum velocity for tag cloud rotation.">
+        Max Velocity:
+        <input
+          type="range"
+          id="maxVelocityControl"
+          min="0.1"
+          max="2"
+          step="0.1"
+          value="0.5"
+        />
+      </label>
+
+      <div class="controls-group">
+        <label title="Select the shape of the tag cloud.">
+          Shape:
+          <select id="shapeControl">
+            <option value="sphere" selected>Sphere</option>
+            <option value="cube">Cube</option>
+            <option value="pyramid">Pyramid</option>
+            <option value="ring">Horizontal Ring</option>
+            <option value="verticalRing">Vertical Ring</option>
+            <option value="helix">Helix</option>
+            <option value="cylinder">Cylinder</option>
+          </select>
+        </label>
+        <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
+      </div>
+
+      <label title="Enable or disable touch interaction for the tag cloud.">
+        Enable Touch:
+        <input type="checkbox" id="enableTouchControl" checked />
+      </label>
+      <label title="Enable or disable device orientation interaction.">
+        Enable Orientation:
+        <input type="checkbox" id="enableOrientationControl" />
+      </label>
+      <label title="Adjust the font size of the tags.">
+        Font Size:
+        <input type="range" id="fontSizeControl" min="10" max="50" value="15" />
+      </label>
+      <button
+        id="pauseResumeButton"
+        title="Pause or resume the tag cloud animation."
+      >
+        Pause
+      </button>
+      <button
+        id="generateCode"
+        title="Generate JavaScript code for the current configuration."
+      >
+        Generate Code
+      </button>
+
+      <div class="tag-controls">
+        <label title="Enter tag text. Use commas to add multiple tags at once.">
+          Tag Text (comma-separated for multiple tags):
+          <input
+            type="text"
+            id="tagTextInput"
+            placeholder="Enter tag text (e.g., JavaScript, HTML, CSS)"
+          />
+        </label>
+        <label title="Select the color for the tags.">
+          Tag Color:
+          <input type="color" id="tagColorInput" value="#ffffff" />
+        </label>
+        <button
+          id="addTagButton"
+          title="Add the entered tags to the tag cloud."
+        >
+          Add Tag(s)
+        </button>
+        <button
+          id="clearTagsButton"
+          title="Remove all tags from the tag cloud."
+        >
+          Clear Tags
+        </button>
+      </div>
+    </div>
+    <footer>
+      © 2025 Orbity.js Playground. All rights reserved. Made by Ignithia
+    </footer>
+    <script src="./orbity.js"></script>
+    <script>
+      const canvas = document.getElementById("orbityCanvas");
+      const radiusControl = document.getElementById("radiusControl");
+      const speedControl = document.getElementById("speedControl");
+      const easingControl = document.getElementById("easingControl");
+      const maxVelocityControl = document.getElementById("maxVelocityControl");
+      const shapeControl = document.getElementById("shapeControl");
+      const enableTouchControl = document.getElementById("enableTouchControl");
+      const enableOrientationControl = document.getElementById(
+        "enableOrientationControl"
+      );
+      const pauseResumeButton = document.getElementById("pauseResumeButton");
+      const codeOutput = document.getElementById("codeOutput");
+      const generateCodeButton = document.getElementById("generateCode");
+      const tagTextInput = document.getElementById("tagTextInput");
+      const tagColorInput = document.getElementById("tagColorInput");
+      const addTagButton = document.getElementById("addTagButton");
+      const clearTagsButton = document.getElementById("clearTagsButton");
+      const tagPreview = document.getElementById("tagPreview");
+      const fontSizeControl = document.getElementById("fontSizeControl");
+
+      let orbityInstance = new Orbity(canvas, {
+        radius: parseInt(radiusControl.value),
+        speed: parseFloat(speedControl.value) * 0.001,
+        easing: parseFloat(easingControl.value),
+        maxVelocity: parseFloat(maxVelocityControl.value),
+        enableTouch: enableTouchControl.checked,
+        enableOrientation: enableOrientationControl.checked,
+      });
+
+      orbityInstance.setTags([
+        { text: "JavaScript", color: "#f7df1e" },
+        { text: "HTML", color: "#e34c26" },
+        { text: "CSS", color: "#264de4" },
+        { text: "React", color: "#61dafb" },
+        { text: "Node.js", color: "#68a063" },
+        { text: "Python", color: "#3776ab" },
+        { text: "Java", color: "#b07219" },
+        { text: "C++", color: "#00599c" },
+        { text: "C#", color: "#178600" },
+        { text: "PHP", color: "#777bb4" },
+        { text: "Ruby", color: "#cc342d" },
+        { text: "Go", color: "#00add8" },
+        { text: "Swift", color: "#f05138" },
+        { text: "Kotlin", color: "#a97bff" },
+        { text: "TypeScript", color: "#3178c6" },
+        { text: "SQL", color: "#e38c00" },
+        { text: "Dart", color: "#00b4ab" },
+        { text: "Rust", color: "#dea584" },
+        { text: "Scala", color: "#c22d40" },
+        { text: "Perl", color: "#0298c3" },
+      ]);
+      updateTagPreview();
+
+      function updateTagPreview() {
+        if (orbityInstance.tags.length === 0) {
+          tagPreview.textContent = "No tags available";
+        } else {
+          tagPreview.innerHTML = orbityInstance.tags
+            .map(
+              (tag) =>
+                `<span style="color: ${tag.color}; background-color: #333; padding: 5px 10px; border-radius: 4px; margin-right: 10px;">${tag.text}</span>`
+            )
+            .join("");
+        }
+      }
+
+      addTagButton.addEventListener("click", () => {
+        const textInput = tagTextInput.value.trim();
+        const color = tagColorInput.value;
+
+        if (!/^#[0-9A-F]{6}$/i.test(tagColorInput.value)) {
+          alert(
+            "Invalid color code. Please use a valid hex color (e.g., #ffffff)."
+          );
+          return;
+        }
+
+        if (textInput) {
+          const tags = textInput.split(",").map((text) => ({
+            text: text.trim(),
+            color,
+          }));
+          tags.forEach((tag) => orbityInstance.addTag(tag));
+          tagTextInput.value = "";
+          updateTagPreview();
+        } else {
+          alert("Please enter tag text.");
+        }
+      });
+
+      clearTagsButton.addEventListener("click", () => {
+        orbityInstance.clearTags();
+        updateTagPreview();
+      });
+
+      radiusControl.addEventListener("input", () => {
+        orbityInstance.updateOptions({ radius: parseInt(radiusControl.value) });
+      });
+
+      speedControl.addEventListener("input", () => {
+        orbityInstance.updateOptions({
+          speed: parseFloat(speedControl.value) * 0.001,
+        });
+      });
+
+      easingControl.addEventListener("input", () => {
+        orbityInstance.updateOptions({
+          easing: parseFloat(easingControl.value),
+        });
+      });
+
+      maxVelocityControl.addEventListener("input", () => {
+        orbityInstance.updateOptions({
+          maxVelocity: parseFloat(maxVelocityControl.value),
+        });
+      });
+
+      shapeControl.addEventListener("change", () => {
+        const shape = shapeControl.value;
+        const shapePreview = document.getElementById("shapePreview");
+        shapePreview.textContent = `Preview: ${shape}`;
+        orbityInstance.updateOptions({ shape });
+      });
+
+      enableTouchControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableTouch: enableTouchControl.checked,
+        });
+      });
+
+      enableOrientationControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableOrientation: enableOrientationControl.checked,
+        });
+      });
+
+      pauseResumeButton.addEventListener("click", () => {
+        if (orbityInstance.settings.paused) {
+          orbityInstance.resume();
+          pauseResumeButton.textContent = "Pause";
+        } else {
+          orbityInstance.pause();
+          pauseResumeButton.textContent = "Resume";
+        }
+      });
+
+      fontSizeControl.addEventListener("input", () => {
+        orbityInstance.tags.forEach((tag) => {
+          tag.fontSize = parseInt(fontSizeControl.value);
+        });
+        orbityInstance._draw();
+      });
+      generateCodeButton.addEventListener("click", () => {
+        const escapeHTML = (str) =>
+          str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        const generatedCode = `
+const orbityInstance = new Orbity(canvas, {
+  radius: ${escapeHTML(radiusControl.value)},
+  speed: ${escapeHTML((parseFloat(speedControl.value) * 0.001).toString())},
+  easing: ${escapeHTML(easingControl.value)},
+  maxVelocity: ${escapeHTML(maxVelocityControl.value)},
+  enableTouch: ${escapeHTML(enableTouchControl.checked.toString())},
+  enableOrientation: ${escapeHTML(enableOrientationControl.checked.toString())},
+  shape: "${escapeHTML(shapeControl.value)}",
+});
+orbityInstance.setTags([
+  /* Add your tags here */
+]);
+        `;
+        codeOutput.textContent = generatedCode.trim();
+      });
+
+      const exportTagsButton = document.createElement("button");
+      exportTagsButton.textContent = "Export Tags";
+      exportTagsButton.addEventListener("click", () => {
+        const tags = orbityInstance.tags.map(({ text, color }) => ({
+          text,
+          color,
+        }));
+        const blob = new Blob([JSON.stringify(tags, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "tags.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      document.querySelector(".controls").append(exportTagsButton);
+    </script>
+  </body>
+</html>
