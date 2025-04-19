@@ -268,6 +268,42 @@
         font-weight: 600;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: #1e1e2f; /* Dark background for the table */
+        color: #f5f7fa; /* Light text for readability */
+        border: 1px solid #3a3a4f; /* Subtle border for the table */
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        padding: 12px 15px; /* Add padding for spacing */
+        text-align: left;
+        border-bottom: 1px solid #3a3a4f; /* Subtle row separation */
+      }
+
+      th {
+        background: #2a3eb1; /* Celestial Blue for the header */
+        color: #f5f7fa; /* Light text for the header */
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background: #2a3eb1; /* Highlight row on hover */
+        color: #f5f7fa;
+      }
+
+      td code {
+        background: #3a3a4f; /* Subtle background for inline code */
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
@@ -398,6 +434,87 @@ orbityInstance.updateOptions({
   shape: "pyramid",
 });
       </code></pre>
+
+      <h2 id="configuration-options">Configuration Options</h2>
+      <p>
+        Below is a list of configuration options available in Orbity.js, along
+        with their descriptions and default values:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>radius</code></td>
+            <td>Number</td>
+            <td>The radius of the tag cloud in pixels.</td>
+            <td><code>150</code></td>
+          </tr>
+          <tr>
+            <td><code>speed</code></td>
+            <td>Number</td>
+            <td>
+              The rotation speed of the tag cloud. Higher values result in
+              faster rotation.
+            </td>
+            <td><code>0.002</code></td>
+          </tr>
+          <tr>
+            <td><code>shape</code></td>
+            <td>String</td>
+            <td>
+              The shape of the tag cloud. Supported values are
+              <code>"sphere"</code>, <code>"cube"</code>,
+              <code>"pyramid"</code>, etc.
+            </td>
+            <td><code>"sphere"</code></td>
+          </tr>
+          <tr>
+            <td><code>maxVelocity</code></td>
+            <td>Number</td>
+            <td>
+              The maximum rotation velocity of the tag cloud. This limits how
+              fast the cloud can spin.
+            </td>
+            <td><code>0.01</code></td>
+          </tr>
+          <tr>
+            <td><code>enableTouch</code></td>
+            <td>Boolean</td>
+            <td>
+              Enables touch interactions for rotating the tag cloud on touch
+              devices.
+            </td>
+            <td><code>false</code></td>
+          </tr>
+          <tr>
+            <td><code>enableOrientation</code></td>
+            <td>Boolean</td>
+            <td>
+              Enables device orientation support, allowing the tag cloud to
+              respond to device tilting.
+            </td>
+            <td><code>false</code></td>
+          </tr>
+          <tr>
+            <td><code>easing</code></td>
+            <td>String</td>
+            <td>
+              The easing function for the rotation animation. Supported values
+              include
+              <code>"linear"</code>, <code>"ease-in"</code>,
+              <code>"ease-out"</code>, etc.
+            </td>
+            <td><code>"linear"</code></td>
+          </tr>
+        </tbody>
+      </table>
 
       <section id="live-editor">
         <h2>Try It Yourself</h2>
