@@ -340,9 +340,9 @@ orbityInstance.setTags([
 const canvas = document.getElementById("orbityCanvas");
 const orbityInstance = new Orbity(canvas, {
   radius: 200, // Larger radius for a bigger tag cloud
-  speed: 0.005, // Faster rotation speed
+  speed: 1, // Faster rotation speed
   shape: "cube", // Cube-shaped tag cloud
-  maxVelocity: 0.02, // Maximum rotation velocity
+  maxVelocity: 0.2, // Maximum rotation velocity
   enableTouch: true, // Enable touch interactions
   enableOrientation: true, // Enable device orientation support
 });
