@@ -89,6 +89,7 @@
       >
         Generate Code
       </button>
+      <div id="codeOutput" class="code-output"></div>
 
       <div class="tag-controls">
         <label title="Enter tag text. Use commas to add multiple tags at once.">
@@ -115,6 +116,7 @@
         >
           Clear Tags
         </button>
+        <div id="tagPreview" class="tag-preview"></div>
       </div>
     </div>
     <footer>
@@ -139,7 +141,7 @@
       const tagColorInput = document.getElementById("tagColorInput");
       const addTagButton = document.getElementById("addTagButton");
       const clearTagsButton = document.getElementById("clearTagsButton");
-      const tagPreview = document.getElementById("tagTextInput");
+      const tagPreview = document.getElementById("tagPreview");
       const fontSizeControl = document.getElementById("fontSizeControl");
 
       let orbityInstance = new Orbity(canvas, {
