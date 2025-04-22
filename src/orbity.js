@@ -1,3 +1,7 @@
+/* Orbity.js is inspired by tagcanvas.js 
+link to tagcanvas.js: https://www.goat1000.com/tagcanvas.php
+Thanks to the original author for the inspiration! */
+
 class Orbity {
   /**
    * Creates an instance of Orbity.
@@ -38,6 +42,10 @@ class Orbity {
     this._init();
   }
 
+  /**
+   * Initializes the Orbity instance by setting up the canvas, event listeners, and starting the animation.
+   * @private
+   */
   _init() {
     this._resize();
     window.addEventListener("resize", () => this._resize());
@@ -50,6 +58,10 @@ class Orbity {
     this._animate();
   }
 
+  /**
+   * Resizes the canvas to match its container and recalculates the center and tag positions.
+   * @private
+   */
   _resize() {
     this.canvas.width = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
@@ -57,6 +69,14 @@ class Orbity {
     this._positionTags();
   }
 
+  /**
+   * Sets the tags to be displayed in the 3D tag cloud.
+   * @param {Array<Object>} dataArray - Array of tag data objects.
+   * Each object should have the following properties:
+   *   - text {string}: The text of the tag.
+   *   - color {string}: The color of the tag (e.g., "#fff").
+   *   - fontSize {number} (optional): The font size of the tag.
+   */
   setTags(dataArray) {
     this.tags = dataArray.map((data, i) => ({
       ...data,
@@ -68,10 +88,22 @@ class Orbity {
     this._positionTags();
   }
 
+  /**
+   * Generates a random angle for tag positioning.
+   * @private
+   * @returns {number} A random angle in radians.
+   */
   _getRandomAngle() {
     return Math.random() * 2 * Math.PI;
   }
 
+  /**
+   * Adds a single tag to the 3D tag cloud.
+   * @param {Object} tagData - Data for the new tag.
+   *   - text {string}: The text of the tag.
+   *   - color {string}: The color of the tag (e.g., "#fff").
+   *   - fontSize {number} (optional): The font size of the tag.
+   */
   addTag(tagData) {
     if (!this._validateTag(tagData)) return;
     this.tags.push({
@@ -84,11 +116,20 @@ class Orbity {
     this._positionTags();
   }
 
+  /**
+   * Removes a tag from the 3D tag cloud by its index.
+   * @param {number} index - Index of the tag to remove.
+   */
   removeTag(index) {
     this.tags.splice(index, 1);
     this._positionTags();
   }
 
+  /**
+   * Updates the data of an existing tag.
+   * @param {number} index - Index of the tag to update.
+   * @param {Object} data - New data for the tag.
+   */
   updateTag(index, data) {
     if (!this.tags[index]) {
       console.error(`Tag at index ${index} does not exist.`);
@@ -98,10 +139,17 @@ class Orbity {
     this._positionTags();
   }
 
+  /**
+   * Clears all tags from the 3D tag cloud.
+   */
   clearTags() {
     this.tags = [];
   }
 
+  /**
+   * Updates the configuration options for the Orbity instance.
+   * @param {Object} newOptions - New configuration options.
+   */
   updateOptions(newOptions) {
     this.settings = { ...this.settings, ...newOptions };
 
@@ -126,6 +174,28 @@ class Orbity {
     }
   }
 
+  /**
+   * Validates the tag data.
+   * @private
+   * @param {Object} tagData - Data for the tag.
+   * @returns {boolean} True if the tag data is valid, false otherwise.
+   */
+  _validateTag(tagData) {
+    if (!tagData.text || typeof tagData.text !== "string") {
+      console.error("Invalid tag: 'text' is required and must be a string.");
+      return false;
+    }
+    if (!tagData.color || !/^#[0-9A-F]{6}$/i.test(tagData.color)) {
+      console.error("Invalid tag: 'color' must be a valid hex color code.");
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Handles touch interactions for rotating the tag cloud.
+   * @private
+   */
   _bindTouch() {
     if (!this.settings.enableTouch) return;
 
@@ -150,6 +220,7 @@ class Orbity {
         const dx = e.touches[0].clientX - lastX;
         const dy = e.touches[0].clientY - lastY;
 
+        // Calculate velocity and clamp it to maxVelocity
         velocityX = Math.min(
           dx * this.settings.speed,
           this.settings.maxVelocity
@@ -161,7 +232,7 @@ class Orbity {
 
         this.velocity.x =
           Math.sign(velocityY) *
-          Math.min(Math.abs(velocityY), this.settings.maxVelocity);
+          Math.min(Math.abs(velocityY), this.settings.maxVelocity); // Invert Y-axis for natural rotation
         this.velocity.y =
           Math.sign(velocityX) *
           Math.min(Math.abs(velocityX), this.settings.maxVelocity);
@@ -177,6 +248,7 @@ class Orbity {
     this.canvas.addEventListener("touchend", () => {
       this.touch.active = false;
 
+      // Continue rotation with the last velocity
       this.velocity.x =
         Math.sign(velocityY) *
         Math.min(Math.abs(velocityY), this.settings.maxVelocity);
@@ -186,6 +258,10 @@ class Orbity {
     });
   }
 
+  /**
+   * Handles mouse interactions for rotating the tag cloud.
+   * @private
+   */
   _bindMouse() {
     let isDragging = false;
     let lastX = 0;
@@ -207,12 +283,13 @@ class Orbity {
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
 
+      // Calculate velocity and clamp it to maxVelocity
       velocityX = Math.min(dx * this.settings.speed, this.settings.maxVelocity);
       velocityY = Math.min(dy * this.settings.speed, this.settings.maxVelocity);
 
       this.velocity.x =
         Math.sign(velocityY) *
-        Math.min(Math.abs(velocityY), this.settings.maxVelocity);
+        Math.min(Math.abs(velocityY), this.settings.maxVelocity); // Invert Y-axis for natural rotation
       this.velocity.y =
         Math.sign(velocityX) *
         Math.min(Math.abs(velocityX), this.settings.maxVelocity);
@@ -224,6 +301,7 @@ class Orbity {
     this.canvas.addEventListener("mouseup", () => {
       isDragging = false;
 
+      // Continue rotation with the last velocity
       this.velocity.x =
         Math.sign(velocityY) *
         Math.min(Math.abs(velocityY), this.settings.maxVelocity);
@@ -237,11 +315,15 @@ class Orbity {
     });
   }
 
+  /**
+   * Handles device orientation interactions for rotating the tag cloud.
+   * @private
+   */
   _bindOrientation() {
     if (!this.settings.enableOrientation) return;
 
     let lastUpdate = 0;
-    const throttleDelay = 100;
+    const throttleDelay = 100; // Update every 100ms
 
     const handleOrientation = (e) => {
       const now = Date.now();
@@ -256,6 +338,10 @@ class Orbity {
     window.addEventListener("deviceorientation", handleOrientation);
   }
 
+  /**
+   * Attaches mouse interaction events for the tag cloud.
+   * @private
+   */
   _attachInteraction() {
     this.canvas.addEventListener("click", this._onCanvasClick.bind(this));
     this.canvas.addEventListener(
@@ -489,18 +575,27 @@ class Orbity {
     this.animFrame = requestAnimationFrame(this._animate.bind(this));
   }
 
+  /**
+   * Pauses the animation of the tag cloud.
+   */
   pause() {
     this.settings.paused = true;
     if (this.animFrame) cancelAnimationFrame(this.animFrame);
     this._events.pause?.forEach((cb) => cb());
   }
 
+  /**
+   * Resumes the animation of the tag cloud.
+   */
   resume() {
     this.settings.paused = false;
     this._animate();
     this._events.resume?.forEach((cb) => cb());
   }
 
+  /**
+   * Destroys the Orbity instance, removing all event listeners and clearing the canvas.
+   */
   destroy() {
     this.pause();
     window.removeEventListener("resize", this._resize);
@@ -513,5 +608,4 @@ class Orbity {
     this.tags = [];
   }
 }
-
 export default Orbity;
