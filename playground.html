@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Orbity.js Playground</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header>
@@ -89,6 +89,7 @@
       >
         Generate Code
       </button>
+      <div id="codeOutput" class="code-output"></div>
 
       <div class="tag-controls">
         <label title="Enter tag text. Use commas to add multiple tags at once.">
@@ -115,12 +116,13 @@
         >
           Clear Tags
         </button>
+        <div id="tagPreview" class="tag-preview"></div>
       </div>
     </div>
     <footer>
       © 2025 Orbity.js Playground. All rights reserved. Made by Ignithia
     </footer>
-    <script src="https://ignithia.github.io/orbity.js/dist/orbity.min.js"></script>
+    <script src="./dist/orbity.min.js"></script>
     <script>
       const canvas = document.getElementById("orbityCanvas");
       const radiusControl = document.getElementById("radiusControl");
@@ -139,7 +141,7 @@
       const tagColorInput = document.getElementById("tagColorInput");
       const addTagButton = document.getElementById("addTagButton");
       const clearTagsButton = document.getElementById("clearTagsButton");
-      const tagPreview = document.getElementById("tagTextInput");
+      const tagPreview = document.getElementById("tagPreview");
       const fontSizeControl = document.getElementById("fontSizeControl");
 
       let orbityInstance = new Orbity(canvas, {
