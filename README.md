@@ -9,6 +9,8 @@ Orbity is a JavaScript library for creating and managing a 3D tag cloud visualiz
 - Touch and mouse interaction support
 - Device orientation support
 - Customizable settings (radius, speed, easing, etc.)
+- **Hover and click effects for tags**
+- **Custom fonts and styles for tags**
 
 ## Installation
 
@@ -43,6 +45,13 @@ const orbity = new Orbity(canvas, {
   radius: 200,
   speed: 0.01,
   shape: "sphere",
+  hoverEffect: true, // Enable hover effects
+  clickEffect: true, // Enable click effects
+  hoverScale: 1.2, // Scale factor for hover effect
+  hoverColor: "#ffff00", // Hover color
+  hoverOpacity: 1.0, // Hover opacity
+  customFont: "serif", // Font family
+  customFontWeight: "bold", // Font weight
 });
 ```
 
@@ -99,6 +108,28 @@ Updates the configuration options for the Orbity instance.
 
 - **Parameters**:
   - `newOptions`: An object containing new configuration options.
+
+### Configuration Options
+
+Below is a list of configuration options available in Orbity.js:
+
+| Option              | Type    | Description                                                                              | Default        |
+| ------------------- | ------- | ---------------------------------------------------------------------------------------- | -------------- |
+| `radius`            | Number  | The radius of the tag cloud in pixels.                                                   | `150`          |
+| `speed`             | Number  | The rotation speed of the tag cloud. Higher values result in faster rotation.            | `0.002`        |
+| `shape`             | String  | The shape of the tag cloud. Supported values: `"sphere"`, `"cube"`, etc.                 | `"sphere"`     |
+| `maxVelocity`       | Number  | The maximum rotation velocity of the tag cloud.                                          | `0.01`         |
+| `enableTouch`       | Boolean | Enables touch interactions for rotating the tag cloud on touch devices.                  | `false`        |
+| `enableOrientation` | Boolean | Enables device orientation support, allowing the tag cloud to respond to device tilting. | `false`        |
+| `easing`            | Number  | The easing factor for smooth rotation.                                                   | `0.1`          |
+| `autoSpin`          | Boolean | Enables automatic spinning of the tag cloud.                                             | `true`         |
+| `hoverEffect`       | Boolean | Enables hover effects for tags, such as scaling, color changes, and opacity adjustments. | `true`         |
+| `clickEffect`       | Boolean | Enables click effects for tags, such as scaling, color changes, and opacity adjustments. | `true`         |
+| `hoverScale`        | Number  | The scale factor applied to tags when hovered over.                                      | `1.2`          |
+| `hoverColor`        | String  | The color applied to tags when hovered over. Defaults to the tag's original color.       | `null`         |
+| `hoverOpacity`      | Number  | The opacity applied to tags when hovered over.                                           | `1.0`          |
+| `customFont`        | String  | The font family used for tags.                                                           | `"sans-serif"` |
+| `customFontWeight`  | String  | The font weight used for tags.                                                           | `"normal"`     |
 
 ## License
 

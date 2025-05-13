@@ -18,44 +18,24 @@
     </header>
     <canvas id="orbityCanvas" width="800" height="600"></canvas>
     <div class="controls">
-      <label title="Adjust the radius of the tag cloud.">
-        Radius:
-        <input type="range" id="radiusControl" min="1" max="400" value="200" />
-      </label>
-      <label title="Set the rotation speed of the tag cloud.">
-        Speed:
-        <input type="range" id="speedControl" min="1" max="20" value="1" />
-      </label>
-      <label title="Control the easing factor for smooth rotation.">
-        Easing:
-        <input
-          type="range"
-          id="easingControl"
-          min="0.1"
-          max="2"
-          step="0.1"
-          value="0.1"
-        />
-      </label>
-      <label title="Set the maximum velocity for tag cloud rotation.">
-        Max Velocity:
-        <input
-          type="range"
-          id="maxVelocityControl"
-          min="0.1"
-          max="2"
-          step="0.1"
-          value="0.5"
-        />
-      </label>
-
       <div class="controls-group">
+        <h3>General Settings</h3>
+        <label title="Adjust the radius of the tag cloud.">
+          Radius:
+          <input
+            type="range"
+            id="radiusControl"
+            min="1"
+            max="400"
+            value="200"
+          />
+        </label>
         <label title="Select the shape of the tag cloud.">
           Shape:
           <select id="shapeControl">
             <option value="sphere" selected>Sphere</option>
             <option value="cube">Cube</option>
-            <option value="pyramid">Pyramid</option>
+            <option value="plane">Plane</option>
             <option value="ring">Horizontal Ring</option>
             <option value="verticalRing">Vertical Ring</option>
             <option value="helix">Helix</option>
@@ -65,33 +45,85 @@
         <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
       </div>
 
-      <label title="Enable or disable touch interaction for the tag cloud.">
-        Enable Touch:
-        <input type="checkbox" id="enableTouchControl" checked />
-      </label>
-      <label title="Enable or disable device orientation interaction.">
-        Enable Orientation:
-        <input type="checkbox" id="enableOrientationControl" />
-      </label>
-      <label title="Adjust the font size of the tags.">
-        Font Size:
-        <input type="range" id="fontSizeControl" min="10" max="50" value="15" />
-      </label>
-      <button
-        id="pauseResumeButton"
-        title="Pause or resume the tag cloud animation."
-      >
-        Pause
-      </button>
-      <button
-        id="generateCode"
-        title="Generate JavaScript code for the current configuration."
-      >
-        Generate Code
-      </button>
-      <pre id="codeOutput" class="code-output"></pre>
+      <div class="controls-group">
+        <h3>Animation Settings</h3>
+        <label title="Set the rotation speed of the tag cloud.">
+          Speed:
+          <input type="range" id="speedControl" min="0" max="20" value="1" />
+        </label>
+        <label
+          title="Control the easing factor for smooth rotation."
+          id="easingSliderContainer"
+        >
+          Easing:
+          <input
+            type="range"
+            id="easingControl"
+            min="0.1"
+            max="2"
+            step="0.1"
+            value="0.1"
+          />
+        </label>
+        <label title="Set the maximum velocity for tag cloud rotation.">
+          Max Velocity:
+          <input
+            type="range"
+            id="maxVelocityControl"
+            min="0"
+            max="2"
+            step="0.1"
+            value="0.5"
+          />
+        </label>
+        <label title="Enable or disable auto-spin for the tag cloud.">
+          Auto Spin:
+          <input type="checkbox" id="autoSpinControl" checked />
+        </label>
+        <label title="Enable or disable easing for smooth rotation.">
+          Enable Easing:
+          <input type="checkbox" id="enableEasingControl" checked />
+        </label>
+        <button
+          id="pauseResumeButton"
+          title="Pause or resume the tag cloud animation."
+        >
+          Resume cloud
+        </button>
+      </div>
 
-      <div class="tag-controls">
+      <div class="controls-group">
+        <h3>Interaction Settings</h3>
+        <label title="Enable or disable touch interaction for the tag cloud.">
+          Enable Touch:
+          <input type="checkbox" id="enableTouchControl" checked />
+        </label>
+        <label title="Enable or disable device orientation interaction.">
+          Enable Orientation:
+          <input type="checkbox" id="enableOrientationControl" />
+        </label>
+        <label title="Enable or disable drag interaction for the tag cloud.">
+          Enable Drag:
+          <input type="checkbox" id="enableDragControl" checked />
+        </label>
+        <label title="Enable or disable click interaction for the tag cloud.">
+          Enable Click:
+          <input type="checkbox" id="enableClickControl" checked />
+        </label>
+      </div>
+
+      <div class="controls-group">
+        <h3>Tag Settings</h3>
+        <label title="Adjust the font size of the tags.">
+          Font Size:
+          <input
+            type="range"
+            id="fontSizeControl"
+            min="10"
+            max="50"
+            value="15"
+          />
+        </label>
         <label title="Enter tag text. Use commas to add multiple tags at once.">
           Tag Text (comma-separated for multiple tags):
           <input
@@ -117,6 +149,80 @@
           Clear Tags
         </button>
         <div id="tagPreview" class="tag-preview"></div>
+        <button id="exportTagsButton" title="Export all tags as a JSON file.">
+          Export Tags
+        </button>
+      </div>
+
+      <div class="controls-group">
+        <h3>Utility Settings</h3>
+        <button
+          id="generateCode"
+          title="Generate JavaScript code for the current configuration."
+        >
+          Generate Code
+        </button>
+        <pre id="codeOutput" class="code-output"></pre>
+      </div>
+
+      <div class="controls-group">
+        <h3>Hover and Click Effects</h3>
+        <label title="Enable or disable hover effects for tags.">
+          Enable Hover Effect:
+          <input type="checkbox" id="enableHoverEffectControl" checked />
+        </label>
+        <label title="Enable or disable click effects for tags.">
+          Enable Click Effect:
+          <input type="checkbox" id="enableClickEffectControl" checked />
+        </label>
+        <label title="Adjust the scale factor for hover effects.">
+          Hover Scale:
+          <input
+            type="range"
+            id="hoverScaleControl"
+            min="1"
+            max="2"
+            step="0.1"
+            value="1.2"
+          />
+        </label>
+        <label title="Select the hover color for tags.">
+          Hover Color:
+          <input type="color" id="hoverColorControl" value="#ffff00" />
+        </label>
+        <label title="Adjust the opacity for hover effects.">
+          Hover Opacity:
+          <input
+            type="range"
+            id="hoverOpacityControl"
+            min="0.1"
+            max="1"
+            step="0.1"
+            value="1.0"
+          />
+        </label>
+      </div>
+
+      <div class="controls-group">
+        <h3>Font and Style Settings</h3>
+        <label title="Select the font family for tags.">
+          Font Family:
+          <select id="fontFamilyControl">
+            <option value="sans-serif" selected>Sans-Serif</option>
+            <option value="serif">Serif</option>
+            <option value="monospace">Monospace</option>
+            <option value="cursive">Cursive</option>
+            <option value="fantasy">Fantasy</option>
+          </select>
+        </label>
+        <label title="Select the font weight for tags.">
+          Font Weight:
+          <select id="fontWeightControl">
+            <option value="normal" selected>Normal</option>
+            <option value="bold">Bold</option>
+            <option value="lighter">Lighter</option>
+          </select>
+        </label>
       </div>
     </div>
     <footer>
@@ -143,6 +249,28 @@
       const clearTagsButton = document.getElementById("clearTagsButton");
       const tagPreview = document.getElementById("tagPreview");
       const fontSizeControl = document.getElementById("fontSizeControl");
+      const autoSpinControl = document.getElementById("autoSpinControl");
+      const enableEasingControl = document.getElementById(
+        "enableEasingControl"
+      );
+      const easingSliderContainer = document.getElementById(
+        "easingSliderContainer"
+      );
+      const enableDragControl = document.getElementById("enableDragControl");
+      const enableClickControl = document.getElementById("enableClickControl");
+      const enableHoverEffectControl = document.getElementById(
+        "enableHoverEffectControl"
+      );
+      const enableClickEffectControl = document.getElementById(
+        "enableClickEffectControl"
+      );
+      const hoverScaleControl = document.getElementById("hoverScaleControl");
+      const hoverColorControl = document.getElementById("hoverColorControl");
+      const hoverOpacityControl = document.getElementById(
+        "hoverOpacityControl"
+      );
+      const fontFamilyControl = document.getElementById("fontFamilyControl");
+      const fontWeightControl = document.getElementById("fontWeightControl");
 
       let orbityInstance = new Orbity(canvas, {
         radius: parseInt(radiusControl.value),
@@ -151,6 +279,18 @@
         maxVelocity: parseFloat(maxVelocityControl.value),
         enableTouch: enableTouchControl.checked,
         enableOrientation: enableOrientationControl.checked,
+        autoSpin: autoSpinControl.checked,
+        enableEasing: enableEasingControl.checked,
+        enableDrag: enableDragControl.checked,
+        enableClick: enableClickControl.checked,
+        hoverEffect: enableHoverEffectControl.checked,
+        clickEffect: enableClickEffectControl.checked,
+        hoverScale: parseFloat(hoverScaleControl.value),
+        hoverColor: hoverColorControl.value,
+        hoverOpacity: parseFloat(hoverOpacityControl.value),
+        customFont: fontFamilyControl.value,
+        customFontWeight: fontWeightControl.value,
+        shape: shapeControl.value,
       });
 
       orbityInstance.setTags([
@@ -177,6 +317,29 @@
       ]);
       updateTagPreview();
 
+      function updateOrbityOptions() {
+        orbityInstance.updateOptions({
+          radius: parseInt(radiusControl.value),
+          speed: parseFloat(speedControl.value) * 0.001,
+          easing: parseFloat(easingControl.value),
+          maxVelocity: parseFloat(maxVelocityControl.value),
+          enableTouch: enableTouchControl.checked,
+          enableOrientation: enableOrientationControl.checked,
+          autoSpin: autoSpinControl.checked,
+          enableEasing: enableEasingControl.checked,
+          enableDrag: enableDragControl.checked,
+          enableClick: enableClickControl.checked,
+          hoverEffect: enableHoverEffectControl.checked,
+          clickEffect: enableClickEffectControl.checked,
+          hoverScale: parseFloat(hoverScaleControl.value),
+          hoverColor: hoverColorControl.value,
+          hoverOpacity: parseFloat(hoverOpacityControl.value),
+          customFont: fontFamilyControl.value,
+          customFontWeight: fontWeightControl.value,
+          shape: shapeControl.value,
+        });
+      }
+
       function updateTagPreview() {
         if (orbityInstance.tags.length === 0) {
           tagPreview.textContent = "No tags available";
@@ -190,11 +353,75 @@
         }
       }
 
+      radiusControl.addEventListener("input", updateOrbityOptions);
+      speedControl.addEventListener("input", updateOrbityOptions);
+      easingControl.addEventListener("input", updateOrbityOptions);
+      maxVelocityControl.addEventListener("input", updateOrbityOptions);
+      shapeControl.addEventListener("change", () => {
+        const shape = shapeControl.value;
+        document.getElementById(
+          "shapePreview"
+        ).textContent = `Preview: ${shape}`;
+        updateOrbityOptions();
+      });
+      enableTouchControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableTouch: enableTouchControl.checked,
+        });
+      });
+      enableOrientationControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableOrientation: enableOrientationControl.checked,
+        });
+      });
+      autoSpinControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({ autoSpin: autoSpinControl.checked });
+      });
+      enableEasingControl.addEventListener("change", () => {
+        updateOrbityOptions();
+        easingSliderContainer.style.display = enableEasingControl.checked
+          ? "flex"
+          : "none";
+      });
+      enableDragControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({ enableDrag: enableDragControl.checked });
+      });
+      enableClickControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableClick: enableClickControl.checked,
+        });
+      });
+
+      enableHoverEffectControl.addEventListener("change", updateOrbityOptions);
+      enableClickEffectControl.addEventListener("change", updateOrbityOptions);
+      hoverScaleControl.addEventListener("input", updateOrbityOptions);
+      hoverColorControl.addEventListener("input", updateOrbityOptions);
+      hoverOpacityControl.addEventListener("input", updateOrbityOptions);
+      fontFamilyControl.addEventListener("change", updateOrbityOptions);
+      fontWeightControl.addEventListener("change", updateOrbityOptions);
+
+      pauseResumeButton.addEventListener("click", () => {
+        if (orbityInstance.settings.paused) {
+          orbityInstance.resume();
+          pauseResumeButton.textContent = "Pause cloud";
+        } else {
+          orbityInstance.pause();
+          pauseResumeButton.textContent = "Resume cloud";
+        }
+      });
+
+      fontSizeControl.addEventListener("input", () => {
+        orbityInstance.tags.forEach((tag) => {
+          tag.fontSize = parseInt(fontSizeControl.value);
+        });
+        orbityInstance._draw();
+      });
+
       addTagButton.addEventListener("click", () => {
         const textInput = tagTextInput.value.trim();
         const color = tagColorInput.value;
 
-        if (!/^#[0-9A-F]{6}$/i.test(tagColorInput.value)) {
+        if (!/^#[0-9A-F]{6}$/i.test(color)) {
           alert(
             "Invalid color code. Please use a valid hex color (e.g., #ffffff)."
           );
@@ -263,10 +490,10 @@
       pauseResumeButton.addEventListener("click", () => {
         if (orbityInstance.settings.paused) {
           orbityInstance.resume();
-          pauseResumeButton.textContent = "Pause";
+          pauseResumeButton.textContent = "Pause cloud";
         } else {
           orbityInstance.pause();
-          pauseResumeButton.textContent = "Resume";
+          pauseResumeButton.textContent = "Resume cloud";
         }
       });
 
@@ -276,6 +503,7 @@
         });
         orbityInstance._draw();
       });
+
       generateCodeButton.addEventListener("click", () => {
         const escapeHTML = (str) =>
           str
@@ -290,6 +518,17 @@ const orbityInstance = new Orbity(canvas, {
   maxVelocity: ${escapeHTML(maxVelocityControl.value)},
   enableTouch: ${escapeHTML(enableTouchControl.checked.toString())},
   enableOrientation: ${escapeHTML(enableOrientationControl.checked.toString())},
+  autoSpin: ${escapeHTML(autoSpinControl.checked.toString())},
+  enableEasing: ${escapeHTML(enableEasingControl.checked.toString())},
+  enableDrag: ${escapeHTML(enableDragControl.checked.toString())},
+  enableClick: ${escapeHTML(enableClickControl.checked.toString())},
+  hoverEffect: ${escapeHTML(enableHoverEffectControl.checked.toString())},
+  clickEffect: ${escapeHTML(enableClickEffectControl.checked.toString())},
+  hoverScale: ${escapeHTML(hoverScaleControl.value)},
+  hoverColor: "${escapeHTML(hoverColorControl.value)}",
+  hoverOpacity: ${escapeHTML(hoverOpacityControl.value)},
+  customFont: "${escapeHTML(fontFamilyControl.value)}",
+  customFontWeight: "${escapeHTML(fontWeightControl.value)}",
   shape: "${escapeHTML(shapeControl.value)}",
 });
 orbityInstance.setTags([
@@ -299,8 +538,7 @@ orbityInstance.setTags([
         codeOutput.textContent = generatedCode.trim();
       });
 
-      const exportTagsButton = document.createElement("button");
-      exportTagsButton.textContent = "Export Tags";
+      const exportTagsButton = document.getElementById("exportTagsButton");
       exportTagsButton.addEventListener("click", () => {
         const tags = orbityInstance.tags.map(({ text, color }) => ({
           text,
@@ -317,7 +555,38 @@ orbityInstance.setTags([
         URL.revokeObjectURL(url);
       });
 
-      document.querySelector(".controls").append(exportTagsButton);
+      autoSpinControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          autoSpin: autoSpinControl.checked,
+        });
+      });
+
+      enableEasingControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableEasing: enableEasingControl.checked,
+        });
+        easingSliderContainer.style.display = enableEasingControl.checked
+          ? "flex"
+          : "none";
+      });
+
+      enableDragControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableDrag: enableDragControl.checked,
+        });
+      });
+
+      enableClickControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableClick: enableClickControl.checked,
+        });
+      });
+
+      enableTouchControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          enableTouch: enableTouchControl.checked,
+        });
+      });
     </script>
   </body>
 </html>
