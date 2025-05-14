@@ -56,7 +56,9 @@
 
         <h2 id="features">Features</h2>
         <ul>
-          <li>Customizable shapes, including sphere, cube, plane, and more.</li>
+          <li>
+            Customizable shapes, including sphere, cube, plane, torus, and more.
+          </li>
           <li>
             Touch and device orientation support for interactive experiences.
           </li>
@@ -140,6 +142,23 @@ orbityInstance.setTags([
   { text: "CSS", color: "#2965f1" },
   { text: "React", color: "#61dafb" },
   { text: "Node.js", color: "#68a063" },
+]);
+          </code></pre>
+
+          <h3>2. Creating a Torus-Shaped Tag Cloud</h3>
+          <p>To create a tag cloud with a torus shape:</p>
+          <pre><code>
+const canvas = document.getElementById("orbityCanvas");
+const orbityInstance = new Orbity(canvas, {
+  radius: 200,
+  shape: "torus",
+  majorRadius: 150, // Distance from the center of the torus to the center of the tube
+  minorRadius: 50,  // Radius of the tube
+});
+orbityInstance.setTags([
+  { text: "JavaScript", color: "#f7df1e" },
+  { text: "HTML", color: "#e34c26" },
+  { text: "CSS", color: "#2965f1" },
 ]);
           </code></pre>
         </section>
@@ -322,6 +341,21 @@ const orbityInstance = new Orbity(canvas, {
               <td>The font weight used for tags.</td>
               <td><code>"normal"</code></td>
             </tr>
+            <tr>
+              <td><code>majorRadius</code></td>
+              <td>Number</td>
+              <td>
+                The major radius of the torus (distance from the center of the
+                torus to the center of the tube).
+              </td>
+              <td><code>150</code></td>
+            </tr>
+            <tr>
+              <td><code>minorRadius</code></td>
+              <td>Number</td>
+              <td>The minor radius of the torus (radius of the tube).</td>
+              <td><code>50</code></td>
+            </tr>
           </tbody>
         </table>
 
@@ -334,14 +368,16 @@ const orbityInstance = new Orbity(canvas, {
         <h3>1. Using Custom Shapes</h3>
         <p>
           Orbity.js supports custom shapes like <code>helix</code>,
-          <code>ring</code>, <code>verticalRing</code>, and
-          <code>cylinder</code>. Here's an example of a helix-shaped tag cloud:
+          <code>ring</code>, <code>verticalRing</code>, <code>cylinder</code>,
+          and <code>torus</code>. Here's an example of a torus-shaped tag cloud:
         </p>
         <pre><code>
 const canvas = document.getElementById("orbityCanvas");
 const orbityInstance = new Orbity(canvas, {
   radius: 200,
-  shape: "helix", // Helix-shaped tag cloud
+  shape: "torus",
+  majorRadius: 150,
+  minorRadius: 50,
 });
 orbityInstance.setTags([
   { text: "JavaScript", color: "#f7df1e" },

@@ -16,7 +16,7 @@ class Orbity {
    * @param {boolean} [options.enableTouch=true] - Enable touch interaction.
    * @param {boolean} [options.enableOrientation=false] - Enable device orientation interaction.
    * @param {number} [options.maxVelocity=0.05] - Maximum velocity for rotation.
-   * @param {string} [options.shape=DEFAULT_SHAPE] - Shape of the tag cloud (e.g., "sphere", "cube", "plane", "helix", "ring", "verticalRing", "cylinder", "pyramid").
+   * @param {string} [options.shape=DEFAULT_SHAPE] - Shape of the tag cloud (e.g., "sphere", "cube", "plane", "helix", "ring", "verticalRing", "cylinder", "pyramid", "torus").
    * @param {boolean} [options.enableDrag=true] - Enable drag interaction.
    * @param {boolean} [options.enableClick=true] - Enable click interaction.
    * @param {boolean} [options.hoverEffect=true] - Enable/disable hover effects.
@@ -26,6 +26,8 @@ class Orbity {
    * @param {number} [options.hoverOpacity=1.0] - Opacity change on hover.
    * @param {string} [options.customFont="sans-serif"] - Default font family.
    * @param {string} [options.customFontWeight="normal"] - Default font weight.
+   * @param {number} [options.majorRadius] - Major radius for the torus shape.
+   * @param {number} [options.minorRadius] - Minor radius for the torus shape.
    */
   constructor(canvas, options = {}) {
     this.canvas = canvas;
@@ -325,6 +327,7 @@ class Orbity {
         "verticalRing",
         "cylinder",
         "pyramid",
+        "torus",
       ];
       if (!validShapes.includes(newOptions.shape)) {
         console.error(
@@ -711,6 +714,31 @@ class Orbity {
     const shape = this.settings.shape || DEFAULT_SHAPE;
 
     switch (shape) {
+      case "torus":
+        const majorRadius = this.settings.majorRadius || R * 0.6;
+        const minorRadius = this.settings.minorRadius || R * 0.3;
+        const majorSteps = Math.ceil(Math.sqrt(N));
+        const minorSteps = Math.ceil(N / majorSteps);
+
+        this.tags.forEach((tag, i) => {
+          const majorAngle = (i % majorSteps) * ((2 * Math.PI) / majorSteps);
+          const minorAngle =
+            Math.floor(i / majorSteps) * ((2 * Math.PI) / minorSteps);
+
+          const x =
+            (majorRadius + minorRadius * Math.cos(minorAngle)) *
+            Math.cos(majorAngle);
+          const y =
+            (majorRadius + minorRadius * Math.cos(minorAngle)) *
+            Math.sin(majorAngle);
+          const z = minorRadius * Math.sin(minorAngle);
+
+          tag.x = x;
+          tag.y = y;
+          tag.z = z;
+        });
+        break;
+
       case "cube":
         const side = Math.ceil(Math.cbrt(N));
         const threshold = 0.1; // Threshold to avoid placing tags near the center

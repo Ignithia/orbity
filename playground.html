@@ -41,9 +41,33 @@
             <option value="helix">Helix</option>
             <option value="cylinder">Cylinder</option>
             <option value="pyramid">Pyramid</option>
+            <option value="torus">Torus</option>
           </select>
         </label>
         <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
+        <div id="torusSettings" style="display: none">
+          <h4>Torus Settings</h4>
+          <label title="Set the major radius of the torus.">
+            Major Radius:
+            <input
+              type="range"
+              id="majorRadiusControl"
+              min="50"
+              max="300"
+              value="150"
+            />
+          </label>
+          <label title="Set the minor radius of the torus.">
+            Minor Radius:
+            <input
+              type="range"
+              id="minorRadiusControl"
+              min="10"
+              max="100"
+              value="50"
+            />
+          </label>
+        </div>
       </div>
 
       <div class="controls-group">
@@ -314,6 +338,9 @@
       );
       const saveConfigButton = document.getElementById("saveConfigButton");
       const loadConfigButton = document.getElementById("loadConfigButton");
+      const majorRadiusControl = document.getElementById("majorRadiusControl");
+      const minorRadiusControl = document.getElementById("minorRadiusControl");
+      const torusSettings = document.getElementById("torusSettings");
 
       let orbityInstance = new Orbity(canvas, {
         radius: parseInt(radiusControl.value),
@@ -334,6 +361,8 @@
         customFont: fontFamilyControl.value,
         customFontWeight: fontWeightControl.value,
         shape: shapeControl.value,
+        majorRadius: parseInt(majorRadiusControl.value),
+        minorRadius: parseInt(minorRadiusControl.value),
       });
 
       orbityInstance.setTags([
@@ -380,6 +409,8 @@
           customFont: fontFamilyControl.value,
           customFontWeight: fontWeightControl.value,
           shape: shapeControl.value,
+          majorRadius: parseInt(majorRadiusControl.value),
+          minorRadius: parseInt(minorRadiusControl.value),
         });
       }
 
@@ -405,6 +436,7 @@
         document.getElementById(
           "shapePreview"
         ).textContent = `Preview: ${shape}`;
+        torusSettings.style.display = shape === "torus" ? "block" : "none";
         updateOrbityOptions();
       });
       enableTouchControl.addEventListener("change", () => {
@@ -442,6 +474,8 @@
       hoverOpacityControl.addEventListener("input", updateOrbityOptions);
       fontFamilyControl.addEventListener("change", updateOrbityOptions);
       fontWeightControl.addEventListener("change", updateOrbityOptions);
+      majorRadiusControl.addEventListener("input", updateOrbityOptions);
+      minorRadiusControl.addEventListener("input", updateOrbityOptions);
 
       pauseResumeButton.addEventListener("click", () => {
         if (orbityInstance.settings.paused) {
@@ -515,6 +549,7 @@
         const shape = shapeControl.value;
         const shapePreview = document.getElementById("shapePreview");
         shapePreview.textContent = `Preview: ${shape}`;
+        torusSettings.style.display = shape === "torus" ? "block" : "none";
         orbityInstance.updateOptions({ shape });
       });
 
@@ -573,6 +608,8 @@ const orbityInstance = new Orbity(canvas, {
   customFont: "${escapeHTML(fontFamilyControl.value)}",
   customFontWeight: "${escapeHTML(fontWeightControl.value)}",
   shape: "${escapeHTML(shapeControl.value)}",
+  majorRadius: ${escapeHTML(majorRadiusControl.value)},
+  minorRadius: ${escapeHTML(minorRadiusControl.value)},
 });
 orbityInstance.setTags([
   /* Add your tags here */
@@ -691,6 +728,8 @@ orbityInstance.setTags([
         fontFamilyControl.value = "sans-serif";
         fontWeightControl.value = "normal";
         fontSizeControl.value = 15;
+        majorRadiusControl.value = 150;
+        minorRadiusControl.value = 50;
 
         orbityInstance.updateOptions({
           radius: 200,
@@ -711,6 +750,8 @@ orbityInstance.setTags([
           hoverOpacity: 1.0,
           customFont: "sans-serif",
           customFontWeight: "normal",
+          majorRadius: 150,
+          minorRadius: 50,
         });
         orbityInstance.setTags([]);
         updateTagPreview();
@@ -755,6 +796,8 @@ orbityInstance.setTags([
             hoverOpacity: parseFloat(hoverOpacityControl.value),
             customFont: fontFamilyControl.value,
             customFontWeight: fontWeightControl.value,
+            majorRadius: parseInt(majorRadiusControl.value),
+            minorRadius: parseInt(minorRadiusControl.value),
           },
           tags: orbityInstance.tags.map(({ text, color, fontSize }) => ({
             text,
@@ -813,6 +856,8 @@ orbityInstance.setTags([
                   fontFamilyControl.value = settings.customFont || "sans-serif";
                   fontWeightControl.value =
                     settings.customFontWeight || "normal";
+                  majorRadiusControl.value = settings.majorRadius || 150;
+                  minorRadiusControl.value = settings.minorRadius || 50;
 
                   orbityInstance.updateOptions(settings);
 
