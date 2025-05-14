@@ -40,6 +40,7 @@
             <option value="verticalRing">Vertical Ring</option>
             <option value="helix">Helix</option>
             <option value="cylinder">Cylinder</option>
+            <option value="pyramid">Pyramid</option>
           </select>
         </label>
         <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
@@ -224,6 +225,40 @@
           </select>
         </label>
       </div>
+
+      <div class="controls-group">
+        <h3>Undo/Redo</h3>
+        <button id="undoButton" title="Undo the last action.">Undo</button>
+        <button id="redoButton" title="Redo the last undone action.">
+          Redo
+        </button>
+      </div>
+
+      <div class="controls-group">
+        <h3>Tag Management</h3>
+        <button id="importTagsButton" title="Import tags from a JSON file.">
+          Import Tags
+        </button>
+        <button id="resetSettingsButton" title="Reset all settings to default.">
+          Reset Settings
+        </button>
+      </div>
+
+      <div class="controls-group">
+        <h3>Configuration Management</h3>
+        <button
+          id="saveConfigButton"
+          title="Save the current configuration to a JSON file."
+        >
+          Save Configuration
+        </button>
+        <button
+          id="loadConfigButton"
+          title="Load a configuration from a JSON file."
+        >
+          Load Configuration
+        </button>
+      </div>
     </div>
     <footer>
       © 2025 Orbity.js Playground. All rights reserved. Made by Ignithia
@@ -271,6 +306,14 @@
       );
       const fontFamilyControl = document.getElementById("fontFamilyControl");
       const fontWeightControl = document.getElementById("fontWeightControl");
+      const undoButton = document.getElementById("undoButton");
+      const redoButton = document.getElementById("redoButton");
+      const importTagsButton = document.getElementById("importTagsButton");
+      const resetSettingsButton = document.getElementById(
+        "resetSettingsButton"
+      );
+      const saveConfigButton = document.getElementById("saveConfigButton");
+      const loadConfigButton = document.getElementById("loadConfigButton");
 
       let orbityInstance = new Orbity(canvas, {
         radius: parseInt(radiusControl.value),
@@ -586,6 +629,206 @@ orbityInstance.setTags([
         orbityInstance.updateOptions({
           enableTouch: enableTouchControl.checked,
         });
+      });
+
+      undoButton.addEventListener("click", () => {
+        orbityInstance.undo();
+        updateTagPreview();
+      });
+
+      redoButton.addEventListener("click", () => {
+        orbityInstance.redo();
+        updateTagPreview();
+      });
+
+      importTagsButton.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const tags = JSON.parse(e.target.result);
+                if (
+                  Array.isArray(tags) &&
+                  tags.every((tag) => tag.text && tag.color)
+                ) {
+                  orbityInstance.setTags(tags);
+                  updateTagPreview();
+                } else {
+                  alert("Invalid tag format in JSON file.");
+                }
+              } catch (error) {
+                alert("Failed to parse JSON file.");
+              }
+            };
+            reader.readAsText(file);
+          }
+        });
+        input.click();
+      });
+
+      resetSettingsButton.addEventListener("click", () => {
+        radiusControl.value = 200;
+        speedControl.value = 1;
+        easingControl.value = 0.1;
+        maxVelocityControl.value = 0.5;
+        shapeControl.value = "sphere";
+        enableTouchControl.checked = true;
+        enableOrientationControl.checked = false;
+        autoSpinControl.checked = true;
+        enableEasingControl.checked = true;
+        enableDragControl.checked = true;
+        enableClickControl.checked = true;
+        enableHoverEffectControl.checked = true;
+        enableClickEffectControl.checked = true;
+        hoverScaleControl.value = 1.2;
+        hoverColorControl.value = "#ffff00";
+        hoverOpacityControl.value = 1.0;
+        fontFamilyControl.value = "sans-serif";
+        fontWeightControl.value = "normal";
+        fontSizeControl.value = 15;
+
+        orbityInstance.updateOptions({
+          radius: 200,
+          speed: 0.001,
+          easing: 0.1,
+          maxVelocity: 0.5,
+          shape: "sphere",
+          enableTouch: true,
+          enableOrientation: false,
+          autoSpin: true,
+          enableEasing: true,
+          enableDrag: true,
+          enableClick: true,
+          hoverEffect: true,
+          clickEffect: true,
+          hoverScale: 1.2,
+          hoverColor: "#ffff00",
+          hoverOpacity: 1.0,
+          customFont: "sans-serif",
+          customFontWeight: "normal",
+        });
+        orbityInstance.setTags([]);
+        updateTagPreview();
+      });
+
+      tagPreview.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target.tagName === "SPAN") {
+          const index = Array.from(tagPreview.children).indexOf(target);
+          const tag = orbityInstance.tags[index];
+          if (tag) {
+            const newText = prompt("Edit tag text:", tag.text);
+            if (newText === null) return;
+            if (newText.trim() === "") {
+              orbityInstance.removeTag(index);
+            } else {
+              orbityInstance.updateTag(index, { text: newText.trim() });
+            }
+            updateTagPreview();
+          }
+        }
+      });
+
+      saveConfigButton.addEventListener("click", () => {
+        const config = {
+          settings: {
+            radius: parseInt(radiusControl.value),
+            speed: parseFloat(speedControl.value) * 0.001,
+            easing: parseFloat(easingControl.value),
+            maxVelocity: parseFloat(maxVelocityControl.value),
+            shape: shapeControl.value,
+            enableTouch: enableTouchControl.checked,
+            enableOrientation: enableOrientationControl.checked,
+            autoSpin: autoSpinControl.checked,
+            enableEasing: enableEasingControl.checked,
+            enableDrag: enableDragControl.checked,
+            enableClick: enableClickControl.checked,
+            hoverEffect: enableHoverEffectControl.checked,
+            clickEffect: enableClickEffectControl.checked,
+            hoverScale: parseFloat(hoverScaleControl.value),
+            hoverColor: hoverColorControl.value,
+            hoverOpacity: parseFloat(hoverOpacityControl.value),
+            customFont: fontFamilyControl.value,
+            customFontWeight: fontWeightControl.value,
+          },
+          tags: orbityInstance.tags.map(({ text, color, fontSize }) => ({
+            text,
+            color,
+            fontSize,
+          })),
+        };
+
+        const blob = new Blob([JSON.stringify(config, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "orbity-config.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      loadConfigButton.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const config = JSON.parse(e.target.result);
+                if (
+                  config.settings &&
+                  typeof config.settings === "object" &&
+                  Array.isArray(config.tags)
+                ) {
+                  const settings = config.settings;
+                  radiusControl.value = settings.radius || 200;
+                  speedControl.value = (settings.speed || 0.001) * 1000;
+                  easingControl.value = settings.easing || 0.1;
+                  maxVelocityControl.value = settings.maxVelocity || 0.5;
+                  shapeControl.value = settings.shape || "sphere";
+                  enableTouchControl.checked = settings.enableTouch || false;
+                  enableOrientationControl.checked =
+                    settings.enableOrientation || false;
+                  autoSpinControl.checked = settings.autoSpin || false;
+                  enableEasingControl.checked = settings.enableEasing || false;
+                  enableDragControl.checked = settings.enableDrag || false;
+                  enableClickControl.checked = settings.enableClick || false;
+                  enableHoverEffectControl.checked =
+                    settings.hoverEffect || false;
+                  enableClickEffectControl.checked =
+                    settings.clickEffect || false;
+                  hoverScaleControl.value = settings.hoverScale || 1.2;
+                  hoverColorControl.value = settings.hoverColor || "#ffff00";
+                  hoverOpacityControl.value = settings.hoverOpacity || 1.0;
+                  fontFamilyControl.value = settings.customFont || "sans-serif";
+                  fontWeightControl.value =
+                    settings.customFontWeight || "normal";
+
+                  orbityInstance.updateOptions(settings);
+
+                  orbityInstance.setTags(config.tags);
+                  updateTagPreview();
+                } else {
+                  alert("Invalid configuration file.");
+                }
+              } catch (error) {
+                alert("Failed to parse configuration file.");
+              }
+            };
+            reader.readAsText(file);
+          }
+        });
+        input.click();
       });
     </script>
   </body>

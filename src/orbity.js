@@ -57,10 +57,18 @@ class Orbity {
     );
     this.rotation = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };
+
+    if (this.settings.autoSpin) {
+      this.velocity.x = this.settings.speed * 0.1;
+      this.velocity.y = this.settings.speed * 0.1;
+    }
+
     this.touch = { x: 0, y: 0, active: false };
     this.animFrame = null;
     this._events = { tagClick: [], tagHover: [], tagLeave: [] };
     this._hoveredIndex = null;
+    this.undoStack = [];
+    this.redoStack = [];
 
     this.settings.easing = Math.min(Math.max(this.settings.easing, 0.01), 0.5);
     this.settings.speed = Math.min(Math.max(this.settings.speed, 0.1), 5);
@@ -166,15 +174,12 @@ class Orbity {
   }
 
   /**
-   * Adds a single tag to the 3D tag cloud.
+   * Adds a single tag to the 3D tag cloud and records the action for undo/redo.
    * @param {Object} tagData - Data for the new tag.
-   *   - text {string}: The text of the tag.
-   *   - color {string}: The color of the tag (e.g., "#fff").
-   *   - fontSize {number} (optional): The font size of the tag.
    */
   addTag(tagData) {
     if (!this._validateTag(tagData)) return;
-    this.tags.push({
+    const newTag = {
       ...tagData,
       angleX: this._getRandomAngle(),
       angleY: this._getRandomAngle(),
@@ -183,21 +188,27 @@ class Orbity {
       _scale: 1,
       _color: tagData.color,
       _opacity: 1,
-    });
+    };
+    this.tags.push(newTag);
+    this.undoStack.push({ action: "add", tag: newTag });
+    this.redoStack = [];
     this._positionTags();
   }
 
   /**
-   * Removes a tag from the 3D tag cloud by its index.
+   * Removes a tag from the 3D tag cloud by its index and records the action for undo/redo.
    * @param {number} index - Index of the tag to remove.
    */
   removeTag(index) {
-    this.tags.splice(index, 1);
+    if (index < 0 || index >= this.tags.length) return;
+    const removedTag = this.tags.splice(index, 1)[0];
+    this.undoStack.push({ action: "remove", tag: removedTag, index });
+    this.redoStack = [];
     this._positionTags();
   }
 
   /**
-   * Updates the data of an existing tag.
+   * Updates the data of an existing tag and records the action for undo/redo.
    * @param {number} index - Index of the tag to update.
    * @param {Object} data - New data for the tag.
    */
@@ -206,11 +217,62 @@ class Orbity {
       console.error(`Tag at index ${index} does not exist.`);
       return;
     }
+    const oldData = { ...this.tags[index] };
     Object.assign(this.tags[index], data, {
       _scale: 1,
       _color: data.color || this.tags[index].color,
       _opacity: 1,
     });
+    this.undoStack.push({
+      action: "update",
+      oldData,
+      newData: { ...this.tags[index] },
+    });
+    this.redoStack = [];
+    this._positionTags();
+  }
+
+  /**
+   * Undoes the last tag-related action.
+   */
+  undo() {
+    if (this.undoStack.length === 0) return;
+    const lastAction = this.undoStack.pop();
+    this.redoStack.push(lastAction);
+
+    switch (lastAction.action) {
+      case "add":
+        this.tags.pop();
+        break;
+      case "remove":
+        this.tags.splice(lastAction.index, 0, lastAction.tag);
+        break;
+      case "update":
+        Object.assign(this.tags[lastAction.oldData.index], lastAction.oldData);
+        break;
+    }
+    this._positionTags();
+  }
+
+  /**
+   * Redoes the last undone action.
+   */
+  redo() {
+    if (this.redoStack.length === 0) return;
+    const lastAction = this.redoStack.pop();
+    this.undoStack.push(lastAction);
+
+    switch (lastAction.action) {
+      case "add":
+        this.tags.push(lastAction.tag);
+        break;
+      case "remove":
+        this.tags.splice(lastAction.index, 1);
+        break;
+      case "update":
+        Object.assign(this.tags[lastAction.newData.index], lastAction.newData);
+        break;
+    }
     this._positionTags();
   }
 
@@ -651,29 +713,30 @@ class Orbity {
     switch (shape) {
       case "cube":
         const side = Math.ceil(Math.cbrt(N));
-        this.tags.forEach((tag, i) => {
-          const x = (i % side) - side / 2 + 0.5;
-          const y = (Math.floor(i / side) % side) - side / 2 + 0.5;
-          const z = Math.floor(i / (side * side)) - side / 2 + 0.5;
+        const threshold = 0.1; // Threshold to avoid placing tags near the center
+        let validTags = 0;
+
+        this.tags.forEach((tag) => {
+          let x, y, z;
+
+          // Find the next valid position
+          do {
+            x = (validTags % side) - side / 2 + 0.5;
+            y = (Math.floor(validTags / side) % side) - side / 2 + 0.5;
+            z = Math.floor(validTags / (side * side)) - side / 2 + 0.5;
+            validTags++;
+          } while (
+            Math.abs(x) < threshold &&
+            Math.abs(y) < threshold &&
+            Math.abs(z) < threshold
+          );
+
           tag.x = x * (R / side) * 2;
           tag.y = y * (R / side) * 2;
           tag.z = z * (R / side) * 2;
         });
         break;
-      case "plane":
-        const rows = Math.ceil(Math.sqrt(N));
-        const cols = Math.ceil(N / rows);
-        const cellWidth = (2 * R) / cols;
-        const cellHeight = (2 * R) / rows;
-        this.tags.forEach((tag, i) => {
-          const row = Math.floor(i / cols);
-          const col = i % cols;
 
-          tag.x = col * cellWidth - R + cellWidth / 2;
-          tag.y = row * cellHeight - R + cellHeight / 2;
-          tag.z = 0;
-        });
-        break;
       case "pyramid":
         const levels = Math.ceil(Math.sqrt(N));
         let index = 0;
@@ -717,9 +780,8 @@ class Orbity {
         });
         break;
       case "cylinder":
-        const heightStep = (2 * R) / N;
+        const heightStep = (2 * R) / Math.ceil(N / 10); // Adjust height step for spacing
         const circumferenceTags = Math.ceil(Math.sqrt(N));
-
         this.tags.forEach((tag, i) => {
           const level = Math.floor(i / circumferenceTags);
           const angle =
@@ -730,15 +792,18 @@ class Orbity {
           tag.z = R * Math.sin(angle);
         });
         break;
+
       case "sphere":
       default:
+        const goldenRatio = (1 + Math.sqrt(5)) / 2;
+        const angleIncrement = Math.PI * 2 * goldenRatio;
         this.tags.forEach((tag, i) => {
-          const k = -1 + (2 * i) / (N - 1);
-          const phi = Math.acos(k);
-          const theta = Math.sqrt(N * Math.PI) * phi;
-          tag.x = R * Math.sin(phi) * Math.cos(theta);
-          tag.y = R * Math.sin(phi) * Math.sin(theta);
-          tag.z = R * Math.cos(phi);
+          const t = i / N;
+          const inclination = Math.acos(1 - 2 * t);
+          const azimuth = angleIncrement * i;
+          tag.x = R * Math.sin(inclination) * Math.cos(azimuth);
+          tag.y = R * Math.sin(inclination) * Math.sin(azimuth);
+          tag.z = R * Math.cos(inclination);
         });
         break;
     }
@@ -778,7 +843,11 @@ class Orbity {
 
         const text = tag.text;
 
-        const opacity = tag._opacity !== undefined ? tag._opacity : 1;
+        const maxZ = center.x * 2;
+        const minZ = -center.x * 2;
+        const normalizedZ = (tag.z - minZ) / (maxZ - minZ);
+        const opacity = Math.max(0.2, Math.min(1, normalizedZ));
+
         ctx.globalAlpha = opacity;
         ctx.fillStyle = tag._color || tag.color || "#fff";
         ctx.font = `${this.settings.customFontWeight} ${fontSize}px ${this.settings.customFont}`;
