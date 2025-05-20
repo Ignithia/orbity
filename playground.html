@@ -76,20 +76,6 @@
           Speed:
           <input type="range" id="speedControl" min="0" max="20" value="1" />
         </label>
-        <label
-          title="Control the easing factor for smooth rotation."
-          id="easingSliderContainer"
-        >
-          Easing:
-          <input
-            type="range"
-            id="easingControl"
-            min="0.1"
-            max="2"
-            step="0.1"
-            value="0.1"
-          />
-        </label>
         <label title="Set the maximum velocity for tag cloud rotation.">
           Max Velocity:
           <input
@@ -105,16 +91,6 @@
           Auto Spin:
           <input type="checkbox" id="autoSpinControl" checked />
         </label>
-        <label title="Enable or disable easing for smooth rotation.">
-          Enable Easing:
-          <input type="checkbox" id="enableEasingControl" checked />
-        </label>
-        <button
-          id="pauseResumeButton"
-          title="Pause or resume the tag cloud animation."
-        >
-          Resume cloud
-        </button>
       </div>
 
       <div class="controls-group">
@@ -283,6 +259,68 @@
           Load Configuration
         </button>
       </div>
+
+      <div class="controls-group">
+        <h3>Easing Settings</h3>
+        <label title="Select an easing profile for animations.">
+          Easing Profile:
+          <select id="easingProfileControl">
+            <option value="Snappy">Snappy</option>
+            <option value="Smooth" selected>Smooth</option>
+            <option value="Marathon">Marathon</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </label>
+        <div id="customEasingSettings" style="display: none">
+          <label title="Set a custom ease-in multiplier.">
+            Custom Ease-In:
+            <input
+              type="range"
+              id="customEaseInControl"
+              min="0.05"
+              max="0.5"
+              step="0.01"
+              value="0.1"
+            />
+          </label>
+          <label title="Set a custom friction value.">
+            Custom Friction:
+            <input
+              type="range"
+              id="customFrictionControl"
+              min="0.8"
+              max="1"
+              step="0.01"
+              value="0.95"
+            />
+          </label>
+          <label title="Set the minimum velocity threshold for easing.">
+            Min Velocity Threshold:
+            <input
+              type="range"
+              id="minVelocityThresholdControl"
+              min="0.001"
+              max="0.01"
+              step="0.001"
+              value="0.005"
+            />
+          </label>
+        </div>
+        <label title="Enable or disable auto-easing for animations.">
+          Auto Easing:
+          <input type="checkbox" id="autoEasingControl" checked />
+        </label>
+      </div>
+
+      <div class="controls-group">
+        <h3>Animation Controls</h3>
+        <button
+          id="pauseResumeButton"
+          title="Pause or resume the tag cloud animation."
+        >
+          Pause cloud
+        </button>
+      </div>
     </div>
     <footer>
       © 2025 Orbity.js Playground. All rights reserved. Made by Ignithia
@@ -292,7 +330,6 @@
       const canvas = document.getElementById("orbityCanvas");
       const radiusControl = document.getElementById("radiusControl");
       const speedControl = document.getElementById("speedControl");
-      const easingControl = document.getElementById("easingControl");
       const maxVelocityControl = document.getElementById("maxVelocityControl");
       const shapeControl = document.getElementById("shapeControl");
       const enableTouchControl = document.getElementById("enableTouchControl");
@@ -309,12 +346,6 @@
       const tagPreview = document.getElementById("tagPreview");
       const fontSizeControl = document.getElementById("fontSizeControl");
       const autoSpinControl = document.getElementById("autoSpinControl");
-      const enableEasingControl = document.getElementById(
-        "enableEasingControl"
-      );
-      const easingSliderContainer = document.getElementById(
-        "easingSliderContainer"
-      );
       const enableDragControl = document.getElementById("enableDragControl");
       const enableClickControl = document.getElementById("enableClickControl");
       const enableHoverEffectControl = document.getElementById(
@@ -341,16 +372,30 @@
       const majorRadiusControl = document.getElementById("majorRadiusControl");
       const minorRadiusControl = document.getElementById("minorRadiusControl");
       const torusSettings = document.getElementById("torusSettings");
+      const easingProfileControl = document.getElementById(
+        "easingProfileControl"
+      );
+      const customEasingSettings = document.getElementById(
+        "customEasingSettings"
+      );
+      const customEaseInControl = document.getElementById(
+        "customEaseInControl"
+      );
+      const customFrictionControl = document.getElementById(
+        "customFrictionControl"
+      );
+      const minVelocityThresholdControl = document.getElementById(
+        "minVelocityThresholdControl"
+      );
+      const autoEasingControl = document.getElementById("autoEasingControl");
 
       let orbityInstance = new Orbity(canvas, {
         radius: parseInt(radiusControl.value),
         speed: parseFloat(speedControl.value) * 0.001,
-        easing: parseFloat(easingControl.value),
         maxVelocity: parseFloat(maxVelocityControl.value),
         enableTouch: enableTouchControl.checked,
         enableOrientation: enableOrientationControl.checked,
         autoSpin: autoSpinControl.checked,
-        enableEasing: enableEasingControl.checked,
         enableDrag: enableDragControl.checked,
         enableClick: enableClickControl.checked,
         hoverEffect: enableHoverEffectControl.checked,
@@ -393,12 +438,10 @@
         orbityInstance.updateOptions({
           radius: parseInt(radiusControl.value),
           speed: parseFloat(speedControl.value) * 0.001,
-          easing: parseFloat(easingControl.value),
           maxVelocity: parseFloat(maxVelocityControl.value),
           enableTouch: enableTouchControl.checked,
           enableOrientation: enableOrientationControl.checked,
           autoSpin: autoSpinControl.checked,
-          enableEasing: enableEasingControl.checked,
           enableDrag: enableDragControl.checked,
           enableClick: enableClickControl.checked,
           hoverEffect: enableHoverEffectControl.checked,
@@ -429,7 +472,6 @@
 
       radiusControl.addEventListener("input", updateOrbityOptions);
       speedControl.addEventListener("input", updateOrbityOptions);
-      easingControl.addEventListener("input", updateOrbityOptions);
       maxVelocityControl.addEventListener("input", updateOrbityOptions);
       shapeControl.addEventListener("change", () => {
         const shape = shapeControl.value;
@@ -452,11 +494,10 @@
       autoSpinControl.addEventListener("change", () => {
         orbityInstance.updateOptions({ autoSpin: autoSpinControl.checked });
       });
-      enableEasingControl.addEventListener("change", () => {
-        updateOrbityOptions();
-        easingSliderContainer.style.display = enableEasingControl.checked
-          ? "flex"
-          : "none";
+      easingProfileControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          easingProfile: easingProfileControl.value,
+        });
       });
       enableDragControl.addEventListener("change", () => {
         orbityInstance.updateOptions({ enableDrag: enableDragControl.checked });
@@ -533,12 +574,6 @@
         });
       });
 
-      easingControl.addEventListener("input", () => {
-        orbityInstance.updateOptions({
-          easing: parseFloat(easingControl.value),
-        });
-      });
-
       maxVelocityControl.addEventListener("input", () => {
         orbityInstance.updateOptions({
           maxVelocity: parseFloat(maxVelocityControl.value),
@@ -592,12 +627,10 @@
 const orbityInstance = new Orbity(canvas, {
   radius: ${escapeHTML(radiusControl.value)},
   speed: ${escapeHTML((parseFloat(speedControl.value) * 0.001).toString())},
-  easing: ${escapeHTML(easingControl.value)},
   maxVelocity: ${escapeHTML(maxVelocityControl.value)},
   enableTouch: ${escapeHTML(enableTouchControl.checked.toString())},
   enableOrientation: ${escapeHTML(enableOrientationControl.checked.toString())},
   autoSpin: ${escapeHTML(autoSpinControl.checked.toString())},
-  enableEasing: ${escapeHTML(enableEasingControl.checked.toString())},
   enableDrag: ${escapeHTML(enableDragControl.checked.toString())},
   enableClick: ${escapeHTML(enableClickControl.checked.toString())},
   hoverEffect: ${escapeHTML(enableHoverEffectControl.checked.toString())},
@@ -641,13 +674,10 @@ orbityInstance.setTags([
         });
       });
 
-      enableEasingControl.addEventListener("change", () => {
+      easingProfileControl.addEventListener("change", () => {
         orbityInstance.updateOptions({
-          enableEasing: enableEasingControl.checked,
+          easingProfile: easingProfileControl.value,
         });
-        easingSliderContainer.style.display = enableEasingControl.checked
-          ? "flex"
-          : "none";
       });
 
       enableDragControl.addEventListener("change", () => {
@@ -711,13 +741,11 @@ orbityInstance.setTags([
       resetSettingsButton.addEventListener("click", () => {
         radiusControl.value = 200;
         speedControl.value = 1;
-        easingControl.value = 0.1;
         maxVelocityControl.value = 0.5;
         shapeControl.value = "sphere";
         enableTouchControl.checked = true;
         enableOrientationControl.checked = false;
         autoSpinControl.checked = true;
-        enableEasingControl.checked = true;
         enableDragControl.checked = true;
         enableClickControl.checked = true;
         enableHoverEffectControl.checked = true;
@@ -734,13 +762,11 @@ orbityInstance.setTags([
         orbityInstance.updateOptions({
           radius: 200,
           speed: 0.001,
-          easing: 0.1,
           maxVelocity: 0.5,
           shape: "sphere",
           enableTouch: true,
           enableOrientation: false,
           autoSpin: true,
-          enableEasing: true,
           enableDrag: true,
           enableClick: true,
           hoverEffect: true,
@@ -780,13 +806,11 @@ orbityInstance.setTags([
           settings: {
             radius: parseInt(radiusControl.value),
             speed: parseFloat(speedControl.value) * 0.001,
-            easing: parseFloat(easingControl.value),
             maxVelocity: parseFloat(maxVelocityControl.value),
             shape: shapeControl.value,
             enableTouch: enableTouchControl.checked,
             enableOrientation: enableOrientationControl.checked,
             autoSpin: autoSpinControl.checked,
-            enableEasing: enableEasingControl.checked,
             enableDrag: enableDragControl.checked,
             enableClick: enableClickControl.checked,
             hoverEffect: enableHoverEffectControl.checked,
@@ -836,14 +860,12 @@ orbityInstance.setTags([
                   const settings = config.settings;
                   radiusControl.value = settings.radius || 200;
                   speedControl.value = (settings.speed || 0.001) * 1000;
-                  easingControl.value = settings.easing || 0.1;
                   maxVelocityControl.value = settings.maxVelocity || 0.5;
                   shapeControl.value = settings.shape || "sphere";
                   enableTouchControl.checked = settings.enableTouch || false;
                   enableOrientationControl.checked =
                     settings.enableOrientation || false;
                   autoSpinControl.checked = settings.autoSpin || false;
-                  enableEasingControl.checked = settings.enableEasing || false;
                   enableDragControl.checked = settings.enableDrag || false;
                   enableClickControl.checked = settings.enableClick || false;
                   enableHoverEffectControl.checked =

@@ -365,7 +365,68 @@ const orbityInstance = new Orbity(canvas, {
           and customizable 3D tag clouds. Below are some examples:
         </p>
 
-        <h3>1. Using Custom Shapes</h3>
+        <h3>1. Easing Profiles</h3>
+        <p>
+          Orbity.js includes built-in easing profiles for smooth animations. You
+          can choose from the following profiles:
+        </p>
+        <ul>
+          <li>
+            <strong>Snappy:</strong> Quick ease-in and high friction for fast
+            deceleration.
+          </li>
+          <li>
+            <strong>Smooth:</strong> Balanced ease-in and friction for natural
+            animations.
+          </li>
+          <li>
+            <strong>Marathon:</strong> Slow ease-in and low friction for
+            long-lasting spins.
+          </li>
+        </ul>
+        <p>To set an easing profile:</p>
+        <pre><code>
+orbityInstance.updateOptions({
+  easingProfile: "Smooth", // Choose from "Snappy", "Smooth", or "Marathon"
+});
+</code></pre>
+
+        <h3>2. Custom Easing</h3>
+        <p>
+          For advanced users, Orbity.js allows you to define custom ease-in and
+          friction values:
+        </p>
+        <pre><code>
+orbityInstance.updateOptions({
+  customEaseIn: 0.15, // Custom ease-in multiplier
+  customFriction: 0.92, // Custom friction value
+});
+</code></pre>
+
+        <h3>3. Auto-Easing Toggle</h3>
+        <p>
+          You can enable or disable auto-easing at any time. When disabled, the
+          tag cloud uses raw velocities without easing:
+        </p>
+        <pre><code>
+orbityInstance.updateOptions({
+  autoEasing: false, // Disable auto-easing
+});
+</code></pre>
+
+        <h3>4. Dynamic Thresholding</h3>
+        <p>
+          Orbity.js ensures a smooth stop by maintaining a minimum velocity
+          threshold. Once the velocity falls below this threshold, it is zeroed
+          out:
+        </p>
+        <pre><code>
+orbityInstance.updateOptions({
+  minVelocityThreshold: 0.01, // Set the minimum velocity threshold
+});
+</code></pre>
+
+        <h3>5. Using Custom Shapes</h3>
         <p>
           Orbity.js supports custom shapes like <code>helix</code>,
           <code>ring</code>, <code>verticalRing</code>, <code>cylinder</code>,
@@ -388,20 +449,7 @@ orbityInstance.setTags([
 ]);
         </code></pre>
 
-        <h3>2. Enabling Easing for Smooth Animations</h3>
-        <p>
-          You can enable easing to make the rotation animations smoother. This
-          is controlled by the <code>enableEasing</code> option:
-        </p>
-        <pre><code>
-const orbityInstance = new Orbity(canvas, {
-  radius: 150,
-  enableEasing: true, // Enable easing for smooth animations
-  easing: 0.1, // Adjust the easing factor
-});
-        </code></pre>
-
-        <h3>3. Pausing and Resuming Animations</h3>
+        <h3>6. Pausing and Resuming Animations</h3>
         <p>
           Orbity.js allows you to pause and resume animations programmatically:
         </p>
@@ -410,7 +458,7 @@ orbityInstance.pause(); // Pause the animation
 orbityInstance.resume(); // Resume the animation
         </code></pre>
 
-        <h3>4. Handling Events</h3>
+        <h3>7. Handling Events</h3>
         <p>
           Orbity.js supports events like <code>tagClick</code>,
           <code>tagHover</code>, and <code>tagLeave</code>. Here's an example of
@@ -422,7 +470,7 @@ orbityInstance.on("tagClick", (tag) => {
 });
         </code></pre>
 
-        <h3>5. Customizing Tag Appearance</h3>
+        <h3>8. Customizing Tag Appearance</h3>
         <p>
           You can customize the appearance of individual tags by specifying
           properties like <code>fontSize</code> and <code>color</code>:
@@ -435,7 +483,7 @@ orbityInstance.setTags([
 ]);
         </code></pre>
 
-        <h3>6. Destroying the Instance</h3>
+        <h3>9. Destroying the Instance</h3>
         <p>
           To clean up and remove all event listeners, you can destroy the Orbity
           instance:
@@ -444,7 +492,7 @@ orbityInstance.setTags([
 orbityInstance.destroy();
         </code></pre>
 
-        <h3>7. Controlling Automatic Spinning</h3>
+        <h3>10. Controlling Automatic Spinning</h3>
         <p>
           The <code>autoSpin</code> option allows you to enable or disable
           automatic spinning of the tag cloud. When set to <code>false</code>,

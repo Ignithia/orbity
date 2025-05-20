@@ -4,6 +4,13 @@ Thanks to the original author for the inspiration! */
 
 const DEFAULT_SHAPE = "sphere";
 
+// Add default easing profiles
+const EASING_PROFILES = {
+  Snappy: { easeIn: 0.2, friction: 0.9 },
+  Smooth: { easeIn: 0.1, friction: 0.95 },
+  Marathon: { easeIn: 0.05, friction: 0.99 },
+};
+
 class Orbity {
   /**
    * Creates an instance of Orbity.
@@ -54,6 +61,11 @@ class Orbity {
         hoverOpacity: 1.0,
         customFont: "sans-serif",
         customFontWeight: "normal",
+        easingProfile: "Smooth",
+        customEaseIn: 0.1,
+        customFriction: 0.95,
+        autoEasing: true,
+        minVelocityThreshold: 0.005,
       },
       options
     );
@@ -387,6 +399,22 @@ class Orbity {
         this.resume();
       }
     }
+
+    if (newOptions.easingProfile !== undefined) {
+      this.setEasingProfile(newOptions.easingProfile);
+    }
+    if (newOptions.autoEasing !== undefined) {
+      this.toggleAutoEasing(newOptions.autoEasing);
+    }
+    if (newOptions.customEaseIn !== undefined) {
+      this.settings.customEaseIn = newOptions.customEaseIn;
+    }
+    if (newOptions.customFriction !== undefined) {
+      this.settings.customFriction = newOptions.customFriction;
+    }
+    if (newOptions.minVelocityThreshold !== undefined) {
+      this.settings.minVelocityThreshold = newOptions.minVelocityThreshold;
+    }
   }
 
   /**
@@ -549,16 +577,38 @@ class Orbity {
     });
   }
 
+  /**
+   * Sets the easing profile for the rotation animation.
+   * @param {string} profileName - The name of the easing profile (e.g., "Smooth").
+   */
+  setEasingProfile(profileName) {
+    if (EASING_PROFILES[profileName]) {
+      this.settings.easingProfile = profileName;
+      const { easeIn, friction } = EASING_PROFILES[profileName];
+      this.settings.customEaseIn = easeIn;
+      this.settings.customFriction = friction;
+    } else {
+      console.error(`Invalid easing profile: ${profileName}`);
+    }
+  }
+
+  /**
+   * Toggles auto-easing for the rotation animation.
+   * @param {boolean} enabled - Whether to enable or disable auto-easing.
+   */
+  toggleAutoEasing(enabled) {
+    this.settings.autoEasing = enabled;
+  }
+
   _applyDragEasing() {
-    const easingFactor = 0.97;
-    const stopThreshold = 0.005;
+    const { customFriction, minVelocityThreshold } = this.settings;
 
     const easeOut = () => {
-      this.velocity.x *= easingFactor;
-      this.velocity.y *= easingFactor;
+      this.velocity.x *= customFriction;
+      this.velocity.y *= customFriction;
 
-      if (Math.abs(this.velocity.x) < stopThreshold) this.velocity.x = 0;
-      if (Math.abs(this.velocity.y) < stopThreshold) this.velocity.y = 0;
+      if (Math.abs(this.velocity.x) < minVelocityThreshold) this.velocity.x = 0;
+      if (Math.abs(this.velocity.y) < minVelocityThreshold) this.velocity.y = 0;
 
       if (this.velocity.x !== 0 || this.velocity.y !== 0) {
         requestAnimationFrame(easeOut);
@@ -894,23 +944,28 @@ class Orbity {
     }
   }
 
+  /**
+   * Animates the rotation of the tag cloud.
+   * @private
+   */
   _animate() {
     if (this.settings.paused) return;
 
     if (this.settings.autoSpin) {
-      if (
-        this.settings.maxVelocity === 0 &&
-        this.velocity.x === 0 &&
-        this.velocity.y === 0
-      ) {
+      const { customEaseIn, autoEasing } = this.settings;
+      if (autoEasing) {
+        this.velocity.x +=
+          (this.settings.speed * 0.1 - this.velocity.x) * customEaseIn;
+        this.velocity.y +=
+          (this.settings.speed * 0.1 - this.velocity.y) * customEaseIn;
+      } else {
         this.velocity.x = this.settings.speed * 0.1;
         this.velocity.y = this.settings.speed * 0.1;
       }
-    } else if (this.velocity.x === 0 && this.velocity.y === 0) {
     }
 
     if (this.velocity.x !== 0 || this.velocity.y !== 0) {
-      if (this.settings.enableEasing) {
+      if (this.settings.autoEasing) {
         this.rotation.x +=
           (this.velocity.x - this.rotation.x) * this.settings.easing;
         this.rotation.y +=
