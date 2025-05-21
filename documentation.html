@@ -13,54 +13,74 @@
   </head>
   <body>
     <header>
-      <h1>Orbity.js Documentation</h1>
-      <p>Your guide to creating interactive 3D tag clouds</p>
+      <div class="container">
+        <h1>Orbity.js Documentation</h1>
+        <p>Your guide to creating interactive 3D tag clouds</p>
+      </div>
     </header>
     <nav>
-      <ul>
-        <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#getting-started">Getting Started</a></li>
-        <li><a href="#usage">Usage</a></li>
-        <li><a href="#license">License</a></li>
-        <li><a href="playground.html" target="_blank">Playground</a></li>
-      </ul>
+      <div class="container">
+        <button class="burger-menu" aria-label="Toggle navigation">
+          <div class="burger-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+        <ul class="collapsed">
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#getting-started">Getting Started</a></li>
+          <li><a href="#usage">Usage</a></li>
+          <li><a href="#advanced">Advanced</a></li>
+          <li><a href="#customization">Customization</a></li>
+          <li><a href="#dynamic-tags">Managing Tags Dynamically</a></li>
+          <li><a href="#event-listeners">Utilizing Event Listeners</a></li>
+          <li><a href="#license">License</a></li>
+          <li><a href="playground.html" target="_blank">Playground</a></li>
+        </ul>
+      </div>
     </nav>
     <main>
-      <h2 id="introduction">Introduction</h2>
-      <p>
-        <strong>Orbity.js</strong> is a lightweight and highly customizable
-        JavaScript library for creating interactive 3D tag clouds. It supports
-        various shapes, touch interactions, and device orientation, making it
-        ideal for visually engaging web applications.
-      </p>
-      <a href="playground.html" target="_blank" class="btn"
-        >Try the Playground</a
-      >
+      <div class="container">
+        <h2 id="introduction">Introduction</h2>
+        <p>
+          <strong>Orbity.js</strong> is a lightweight and highly customizable
+          JavaScript library for creating interactive 3D tag clouds. It supports
+          various shapes, touch interactions, and device orientation, making it
+          ideal for visually engaging web applications.
+        </p>
+        <a href="playground.html" target="_blank" class="btn"
+          >Try the Playground</a
+        >
 
-      <h2 id="features">Features</h2>
-      <ul>
-        <li>Customizable shapes, including sphere, cube, pyramid, and more.</li>
-        <li>
-          Touch and device orientation support for interactive experiences.
-        </li>
-        <li>Dynamic tag addition, removal, and updates.</li>
-        <li>
-          Configurable rotation speed, easing, and other animation settings.
-        </li>
-        <li>Accessible with ARIA roles for better usability.</li>
-      </ul>
+        <h2 id="features">Features</h2>
+        <ul>
+          <li>
+            Customizable shapes, including sphere, cube, plane, torus, and more.
+          </li>
+          <li>
+            Touch and device orientation support for interactive experiences.
+          </li>
+          <li>Dynamic tag addition, removal, and updates.</li>
+          <li>
+            Configurable rotation speed, easing, and other animation settings.
+          </li>
+          <li>Accessible with ARIA roles for better usability.</li>
+          <li>Hover and click effects for tags.</li>
+          <li>Custom fonts and styles for tags.</li>
+        </ul>
 
-      <h2 id="getting-started">Getting Started</h2>
-      <p>To use Orbity.js, include the library in your project:</p>
-      <pre><code>&lt;script src="orbity.js"&gt;&lt;/script&gt;</code></pre>
-      <p>
-        Next, add a canvas element to your HTML where the tag cloud will be
-        rendered:
-      </p>
-      <pre><code>&lt;canvas id="orbityCanvas" width="800" height="600"&gt;&lt;/canvas&gt;</code></pre>
-      <p>Finally, initialize Orbity.js with the following script:</p>
-      <pre><code>
+        <h2 id="getting-started">Getting Started</h2>
+        <p>To use Orbity.js, include the library in your project:</p>
+        <pre><code>&lt;script src="orbity.js"&gt;&lt;/script&gt;</code></pre>
+        <p>
+          Next, add a canvas element to your HTML where the tag cloud will be
+          rendered:
+        </p>
+        <pre><code>&lt;canvas id="orbityCanvas" width="800" height="600"&gt;&lt;/canvas&gt;</code></pre>
+        <p>Finally, initialize Orbity.js with the following script:</p>
+        <pre><code>
 const canvas = document.getElementById("orbityCanvas");
 const orbityInstance = new Orbity(canvas, {
   radius: 150,
@@ -73,11 +93,11 @@ orbityInstance.setTags([
 ]);
       </code></pre>
 
-      <h3 id="usage">Basic Example</h3>
-      <p>
-        Here is an example that demonstrates additional features of Orbity.js:
-      </p>
-      <pre><code>
+        <h3 id="usage">Basic Example</h3>
+        <p>
+          Here is an example that demonstrates additional features of Orbity.js:
+        </p>
+        <pre><code>
 const canvas = document.getElementById("orbityCanvas");
 const orbityInstance = new Orbity(canvas, {
   radius: 200, // Larger radius for a bigger tag cloud
@@ -102,16 +122,17 @@ orbityInstance.setTags([
 orbityInstance.addTag({ text: "Vue.js", color: "#42b883" });
 orbityInstance.addTag({ text: "Angular", color: "#dd0031" });
       </code></pre>
-      <p>
-        This example creates a cube-shaped tag cloud with a larger radius,
-        faster rotation speed, and additional tags. It also enables touch and
-        device orientation support for interactive experiences.
-      </p>
+        <p>
+          This example creates a cube-shaped tag cloud with a larger radius,
+          faster rotation speed, and additional tags. It also enables touch and
+          device orientation support for interactive experiences.
+        </p>
 
-      <h2>Usage Examples</h2>
-      <h3>1. Creating a Cube-Shaped Tag Cloud</h3>
-      <p>To create a tag cloud with a cube shape:</p>
-      <pre><code>
+        <h2>Usage Examples</h2>
+        <section>
+          <h3>1. Creating a Cube-Shaped Tag Cloud</h3>
+          <p>To create a tag cloud with a cube shape:</p>
+          <pre><code>
 const canvas = document.getElementById("orbityCanvas");
 const orbityInstance = new Orbity(canvas, {
   radius: 200,
@@ -122,148 +143,510 @@ orbityInstance.setTags([
   { text: "React", color: "#61dafb" },
   { text: "Node.js", color: "#68a063" },
 ]);
-      </code></pre>
+          </code></pre>
 
-      <h3>2. Adding Tags Dynamically</h3>
-      <p>You can add tags dynamically after initializing the tag cloud:</p>
-      <pre><code>
+          <h3>2. Creating a Torus-Shaped Tag Cloud</h3>
+          <p>To create a tag cloud with a torus shape:</p>
+          <pre><code>
+const canvas = document.getElementById("orbityCanvas");
+const orbityInstance = new Orbity(canvas, {
+  radius: 200,
+  shape: "torus",
+  majorRadius: 150, // Distance from the center of the torus to the center of the tube
+  minorRadius: 50,  // Radius of the tube
+});
+orbityInstance.setTags([
+  { text: "JavaScript", color: "#f7df1e" },
+  { text: "HTML", color: "#e34c26" },
+  { text: "CSS", color: "#2965f1" },
+]);
+          </code></pre>
+        </section>
+
+        <h3>2. Adding Tags Dynamically</h3>
+        <p>You can add tags dynamically after initializing the tag cloud:</p>
+        <pre><code>
 orbityInstance.addTag({ text: "Python", color: "#3776ab" });
 orbityInstance.addTag({ text: "Django", color: "#092e20" });
-      </code></pre>
+        </code></pre>
 
-      <h3>3. Updating Tag Cloud Options</h3>
-      <p>To update the configuration of the tag cloud:</p>
-      <pre><code>
+        <h3>3. Updating Tag Cloud Options</h3>
+        <p>To update the configuration of the tag cloud:</p>
+        <pre><code>
 orbityInstance.updateOptions({
   speed: 0.005,
-  shape: "pyramid",
+  shape: "plane",
 });
-      </code></pre>
+        </code></pre>
 
-      <h2 id="configuration-options">Configuration Options</h2>
-      <p>
-        Below is a list of configuration options available in Orbity.js, along
-        with their descriptions and default values:
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Option</th>
-            <th>Type</th>
-            <th>Description</th>
-            <th>Default</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>radius</code></td>
-            <td>Number</td>
-            <td>The radius of the tag cloud in pixels.</td>
-            <td><code>150</code></td>
-          </tr>
-          <tr>
-            <td><code>speed</code></td>
-            <td>Number</td>
-            <td>
-              The rotation speed of the tag cloud. Higher values result in
-              faster rotation.
-            </td>
-            <td><code>0.002</code></td>
-          </tr>
-          <tr>
-            <td><code>shape</code></td>
-            <td>String</td>
-            <td>
-              The shape of the tag cloud. Supported values are
-              <code>"sphere"</code>, <code>"cube"</code>,
-              <code>"pyramid"</code>, etc.
-            </td>
-            <td><code>"sphere"</code></td>
-          </tr>
-          <tr>
-            <td><code>maxVelocity</code></td>
-            <td>Number</td>
-            <td>
-              The maximum rotation velocity of the tag cloud. This limits how
-              fast the cloud can spin.
-            </td>
-            <td><code>0.01</code></td>
-          </tr>
-          <tr>
-            <td><code>enableTouch</code></td>
-            <td>Boolean</td>
-            <td>
-              Enables touch interactions for rotating the tag cloud on touch
-              devices.
-            </td>
-            <td><code>false</code></td>
-          </tr>
-          <tr>
-            <td><code>enableOrientation</code></td>
-            <td>Boolean</td>
-            <td>
-              Enables device orientation support, allowing the tag cloud to
-              respond to device tilting.
-            </td>
-            <td><code>false</code></td>
-          </tr>
-          <tr>
-            <td><code>easing</code></td>
-            <td>String</td>
-            <td>
-              The easing function for the rotation animation. Supported values
-              include
-              <code>"linear"</code>, <code>"ease-in"</code>,
-              <code>"ease-out"</code>, etc.
-            </td>
-            <td><code>"linear"</code></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <section id="live-editor">
-        <h2>Try It Yourself</h2>
-        <p class="note">
-          <strong>Note:</strong> Some shapes, such as "cube" or "pyramid,"
-          require a minimum number of tags to render correctly. Ensure you add
-          enough tags for these shapes to display properly.
+        <h3>Hover and Click Effects</h3>
+        <p>
+          Orbity.js allows you to enable hover and click effects for tags. These
+          effects include scaling, color changes, and opacity adjustments.
         </p>
-        <div class="editor-container">
-          <textarea
-            id="code-editor"
-            placeholder="Write your code here..."
-          ></textarea>
-          <button id="run-code" class="btn">Run Code</button>
-        </div>
-        <canvas id="orbityCanvas" width="800" height="600"></canvas>
-        <a href="playground.html" target="_blank" class="btn"
-          >Go to Playground</a
-        >
-      </section>
+        <pre><code>
+const orbityInstance = new Orbity(canvas, {
+  hoverEffect: true, // Enable hover effects
+  clickEffect: true, // Enable click effects
+  hoverScale: 1.2, // Scale factor for hover effect
+  hoverColor: "#ffff00", // Hover color
+  hoverOpacity: 1.0, // Hover opacity
+});
+        </code></pre>
 
-      <h2 id="license">License</h2>
-      <p>
-        Orbity.js is inspired by
-        <a href="https://www.goat1000.com/tagcanvas.php" target="_blank"
-          >tagcanvas.js</a
-        >. Thanks to the original author for the inspiration!
-      </p>
+        <h3>Custom Fonts and Styles</h3>
+        <p>
+          Customize the font family and weight of tags to match your design:
+        </p>
+        <pre><code>
+const orbityInstance = new Orbity(canvas, {
+  customFont: "serif", // Font family
+  customFontWeight: "bold", // Font weight
+});
+        </code></pre>
+
+        <h2 id="configuration-options">Configuration Options</h2>
+        <p>
+          Below is a list of configuration options available in Orbity.js, along
+          with their descriptions and default values:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>radius</code></td>
+              <td>Number</td>
+              <td>The radius of the tag cloud in pixels.</td>
+              <td><code>150</code></td>
+            </tr>
+            <tr>
+              <td><code>speed</code></td>
+              <td>Number</td>
+              <td>
+                The rotation speed of the tag cloud. Higher values result in
+                faster rotation.
+              </td>
+              <td><code>0.002</code></td>
+            </tr>
+            <tr>
+              <td><code>shape</code></td>
+              <td>String</td>
+              <td>
+                The shape of the tag cloud. Supported values are
+                <code>"sphere"</code>, <code>"cube"</code>,
+                <code>"plane"</code>, etc.
+              </td>
+              <td><code>"sphere"</code></td>
+            </tr>
+            <tr>
+              <td><code>maxVelocity</code></td>
+              <td>Number</td>
+              <td>
+                The maximum rotation velocity of the tag cloud. This limits how
+                fast the cloud can spin.
+              </td>
+              <td><code>0.01</code></td>
+            </tr>
+            <tr>
+              <td><code>enableTouch</code></td>
+              <td>Boolean</td>
+              <td>
+                Enables touch interactions for rotating the tag cloud on touch
+                devices.
+              </td>
+              <td><code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>enableOrientation</code></td>
+              <td>Boolean</td>
+              <td>
+                Enables device orientation support, allowing the tag cloud to
+                respond to device tilting.
+              </td>
+              <td><code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>easing</code></td>
+              <td>String</td>
+              <td>
+                The easing function for the rotation animation. Supported values
+                include
+                <code>"linear"</code>, <code>"ease-in"</code>,
+                <code>"ease-out"</code>, etc.
+              </td>
+              <td><code>"linear"</code></td>
+            </tr>
+            <tr>
+              <td><code>autoSpin</code></td>
+              <td>Boolean</td>
+              <td>
+                Enables automatic spinning of the tag cloud when no interaction
+                occurs. If set to <code>false</code>, the cloud will only move
+                when interacted with.
+              </td>
+              <td><code>true</code></td>
+            </tr>
+            <tr>
+              <td><code>hoverEffect</code></td>
+              <td>Boolean</td>
+              <td>
+                Enables hover effects for tags, such as scaling, color changes,
+                and opacity adjustments.
+              </td>
+              <td><code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>clickEffect</code></td>
+              <td>Boolean</td>
+              <td>
+                Enables click effects for tags, such as scaling, color changes,
+                and opacity adjustments.
+              </td>
+              <td><code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>hoverScale</code></td>
+              <td>Number</td>
+              <td>The scale factor applied to tags when hovered over.</td>
+              <td><code>1.0</code></td>
+            </tr>
+            <tr>
+              <td><code>hoverColor</code></td>
+              <td>String</td>
+              <td>The color applied to tags when hovered over.</td>
+              <td><code>null</code></td>
+            </tr>
+            <tr>
+              <td><code>hoverOpacity</code></td>
+              <td>Number</td>
+              <td>The opacity applied to tags when hovered over.</td>
+              <td><code>1.0</code></td>
+            </tr>
+            <tr>
+              <td><code>customFont</code></td>
+              <td>String</td>
+              <td>The font family used for tags.</td>
+              <td><code>"sans-serif"</code></td>
+            </tr>
+            <tr>
+              <td><code>customFontWeight</code></td>
+              <td>String</td>
+              <td>The font weight used for tags.</td>
+              <td><code>"normal"</code></td>
+            </tr>
+            <tr>
+              <td><code>majorRadius</code></td>
+              <td>Number</td>
+              <td>
+                The major radius of the torus (distance from the center of the
+                torus to the center of the tube).
+              </td>
+              <td><code>150</code></td>
+            </tr>
+            <tr>
+              <td><code>minorRadius</code></td>
+              <td>Number</td>
+              <td>The minor radius of the torus (radius of the tube).</td>
+              <td><code>50</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="advanced">Advanced Features</h2>
+        <p>
+          Orbity.js provides advanced features for creating highly interactive
+          and customizable 3D tag clouds. Below are some examples:
+        </p>
+
+        <h3>1. Easing Profiles</h3>
+        <p>
+          Orbity.js includes built-in easing profiles for smooth animations. You
+          can choose from the following profiles:
+        </p>
+        <ul>
+          <li>
+            <strong>Snappy:</strong> Quick ease-in and high friction for fast
+            deceleration.
+          </li>
+          <li>
+            <strong>Smooth:</strong> Balanced ease-in and friction for natural
+            animations.
+          </li>
+          <li>
+            <strong>Marathon:</strong> Slow ease-in and low friction for
+            long-lasting spins.
+          </li>
+        </ul>
+        <p>To set an easing profile:</p>
+        <pre><code>
+orbityInstance.updateOptions({
+  easingProfile: "Smooth", // Choose from "Snappy", "Smooth", or "Marathon"
+});
+</code></pre>
+
+        <h3>2. Custom Easing</h3>
+        <p>
+          For advanced users, Orbity.js allows you to define custom ease-in and
+          friction values:
+        </p>
+        <pre><code>
+orbityInstance.updateOptions({
+  customEaseIn: 0.15, // Custom ease-in multiplier
+  customFriction: 0.92, // Custom friction value
+});
+</code></pre>
+
+        <h3>3. Auto-Easing Toggle</h3>
+        <p>
+          You can enable or disable auto-easing at any time. When disabled, the
+          tag cloud uses raw velocities without easing:
+        </p>
+        <pre><code>
+orbityInstance.updateOptions({
+  autoEasing: false, // Disable auto-easing
+});
+</code></pre>
+
+        <h3>4. Dynamic Thresholding</h3>
+        <p>
+          Orbity.js ensures a smooth stop by maintaining a minimum velocity
+          threshold. Once the velocity falls below this threshold, it is zeroed
+          out:
+        </p>
+        <pre><code>
+orbityInstance.updateOptions({
+  minVelocityThreshold: 0.01, // Set the minimum velocity threshold
+});
+</code></pre>
+
+        <h3>5. Using Custom Shapes</h3>
+        <p>
+          Orbity.js supports custom shapes like <code>helix</code>,
+          <code>ring</code>, <code>verticalRing</code>, <code>cylinder</code>,
+          and <code>torus</code>. Here's an example of a torus-shaped tag cloud:
+        </p>
+        <pre><code>
+const canvas = document.getElementById("orbityCanvas");
+const orbityInstance = new Orbity(canvas, {
+  radius: 200,
+  shape: "torus",
+  majorRadius: 150,
+  minorRadius: 50,
+});
+orbityInstance.setTags([
+  { text: "JavaScript", color: "#f7df1e" },
+  { text: "HTML", color: "#e34c26" },
+  { text: "CSS", color: "#2965f1" },
+  { text: "React", color: "#61dafb" },
+  { text: "Node.js", color: "#68a063" },
+]);
+        </code></pre>
+
+        <h3>6. Pausing and Resuming Animations</h3>
+        <p>
+          Orbity.js allows you to pause and resume animations programmatically:
+        </p>
+        <pre><code>
+orbityInstance.pause(); // Pause the animation
+orbityInstance.resume(); // Resume the animation
+        </code></pre>
+
+        <h3>7. Handling Events</h3>
+        <p>
+          Orbity.js supports events like <code>tagClick</code>,
+          <code>tagHover</code>, and <code>tagLeave</code>. Here's an example of
+          handling a tag click event:
+        </p>
+        <pre><code>
+orbityInstance.on("tagClick", (tag) => {
+  console.log("Tag clicked:", tag.text);
+});
+        </code></pre>
+
+        <h3>8. Customizing Tag Appearance</h3>
+        <p>
+          You can customize the appearance of individual tags by specifying
+          properties like <code>fontSize</code> and <code>color</code>:
+        </p>
+        <pre><code>
+orbityInstance.setTags([
+  { text: "JavaScript", color: "#f7df1e", fontSize: 20 },
+  { text: "HTML", color: "#e34c26", fontSize: 18 },
+  { text: "CSS", color: "#2965f1", fontSize: 16 },
+]);
+        </code></pre>
+
+        <h3>9. Destroying the Instance</h3>
+        <p>
+          To clean up and remove all event listeners, you can destroy the Orbity
+          instance:
+        </p>
+        <pre><code>
+orbityInstance.destroy();
+        </code></pre>
+
+        <h3>10. Controlling Automatic Spinning</h3>
+        <p>
+          The <code>autoSpin</code> option allows you to enable or disable
+          automatic spinning of the tag cloud. When set to <code>false</code>,
+          the cloud will only move when interacted with.
+        </p>
+        <pre><code>
+const orbityInstance = new Orbity(canvas, {
+  radius: 150,
+  autoSpin: false, // Disable automatic spinning
+});
+        </code></pre>
+        <p>
+          This example disables automatic spinning, requiring user interaction
+          to move the tag cloud.
+        </p>
+
+        <h2 id="customization">Customization</h2>
+        <p>
+          Orbity.js offers a wide range of options to customize the behavior and
+          appearance of your tag cloud. Below are some examples:
+        </p>
+        <h3>1. Adjusting Configuration Options</h3>
+        <p>
+          You can modify options like <code>radius</code>, <code>speed</code>,
+          and <code>shape</code> during initialization:
+        </p>
+        <pre><code>
+const orbityInstance = new Orbity(canvas, {
+  radius: 200, // Set the size of the tag cloud
+  speed: 0.01, // Adjust rotation speed
+  shape: "cylinder", // Use a cylinder shape
+  autoSpin: true, // Enable automatic spinning
+});
+        </code></pre>
+        <p>
+          For a full list of options, refer to the
+          <a href="#configuration-options">Configuration Options</a> section.
+        </p>
+
+        <h2 id="dynamic-tags">Managing Tags Dynamically</h2>
+        <p>
+          Orbity.js allows you to add, remove, or update tags dynamically after
+          the tag cloud has been initialized.
+        </p>
+        <h3>1. Adding Tags</h3>
+        <p>Use the <code>addTag</code> method to add new tags:</p>
+        <pre><code>
+orbityInstance.addTag({ text: "Vue.js", color: "#42b883" });
+orbityInstance.addTag({ text: "Angular", color: "#dd0031" });
+        </code></pre>
+
+        <h3>2. Removing Tags</h3>
+        <p>
+          Use the <code>removeTag</code> method to remove specific tags by their
+          text:
+        </p>
+        <pre><code>
+orbityInstance.removeTag("Vue.js");
+        </code></pre>
+
+        <h3>3. Updating Tags</h3>
+        <p>Use the <code>updateTag</code> method to modify an existing tag:</p>
+        <pre><code>
+orbityInstance.updateTag("Angular", { color: "#c3002f" });
+        </code></pre>
+
+        <h2 id="event-listeners">Utilizing Event Listeners</h2>
+        <p>
+          Orbity.js provides event listeners to enhance interactivity. Below are
+          some examples:
+        </p>
+        <h3>1. Handling Tag Click Events</h3>
+        <p>Use the <code>tagClick</code> event to handle clicks on tags:</p>
+        <pre><code>
+orbityInstance.on("tagClick", (tag) => {
+  console.log("Tag clicked:", tag.text);
+  alert(`You clicked on ${tag.text}`);
+});
+        </code></pre>
+
+        <h3>2. Handling Tag Hover Events</h3>
+        <p>
+          Use the <code>tagHover</code> event to detect when a tag is hovered
+          over:
+        </p>
+        <pre><code>
+orbityInstance.on("tagHover", (tag) => {
+  console.log("Tag hovered:", tag.text);
+});
+        </code></pre>
+
+        <h3>3. Handling Tag Leave Events</h3>
+        <p>
+          Use the <code>tagLeave</code> event to detect when the mouse leaves a
+          tag:
+        </p>
+        <pre><code>
+orbityInstance.on("tagLeave", (tag) => {
+  console.log("Mouse left tag:", tag.text);
+});
+        </code></pre>
+
+        <h3>4. Removing Event Listeners</h3>
+        <p>To remove an event listener, use the <code>off</code> method:</p>
+        <pre><code>
+orbityInstance.off("tagClick");
+        </code></pre>
+
+        <section id="live-editor">
+          <h2>Try It Yourself</h2>
+          <p class="note">
+            <strong>Note:</strong> Some shapes, such as "cube" or "plane,"
+            require a minimum number of tags to render correctly. Ensure you add
+            enough tags for these shapes to display properly.
+          </p>
+          <div class="editor-container">
+            <textarea
+              id="code-editor"
+              placeholder="Write your code here..."
+            ></textarea>
+            <button id="run-code" class="btn">Run Code</button>
+          </div>
+          <canvas id="orbityCanvas" width="800" height="600"></canvas>
+          <a href="playground.html" target="_blank" class="btn"
+            >Go to Playground</a
+          >
+        </section>
+
+        <h2 id="license">License</h2>
+        <p>
+          Orbity.js is inspired by
+          <a href="https://www.goat1000.com/tagcanvas.php" target="_blank"
+            >tagcanvas.js</a
+          >. Thanks to the original author for the inspiration!
+        </p>
+      </div>
     </main>
     <footer>
-      <p>© 2025 Orbity.js. All rights reserved. Made by Ignithia</p>
-      <ul>
-        <li>
-          <a href="https://github.com/Ignithia" target="_blank">GitHub</a>
-        </li>
-        <li>
-          <a href="https://www.ryanvdv-portfolio.be/" target="_blank"
-            >My Website</a
-          >
-        </li>
-        <li>
-          <a href="playground.html" target="_blank">Playground</a>
-        </li>
-      </ul>
+      <div class="container">
+        <p>© 2025 Orbity.js. All rights reserved. Made by Ignithia</p>
+        <ul>
+          <li>
+            <a href="https://github.com/Ignithia" target="_blank">GitHub</a>
+          </li>
+          <li>
+            <a href="https://www.ryanvdv-portfolio.be/" target="_blank"
+              >My Website</a
+            >
+          </li>
+          <li>
+            <a href="playground.html" target="_blank">Playground</a>
+          </li>
+        </ul>
+      </div>
     </footer>
     <script src="./dist/orbity.min.js"></script>
     <script>
@@ -271,6 +654,36 @@ orbityInstance.updateOptions({
         const code = document.getElementById("code-editor").value;
         eval(code);
       });
+
+      const burgerMenu = document.querySelector(".burger-menu");
+      const navMenu = document.querySelector("nav ul");
+
+      burgerMenu.addEventListener("click", () => {
+        burgerMenu.classList.toggle("expanded");
+        navMenu.classList.toggle("expanded");
+        navMenu.classList.toggle("collapsed");
+      });
+
+      const header = document.querySelector("header");
+      const nav = document.querySelector("nav");
+      const navContainer = document.querySelector("nav .container");
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) {
+            nav.classList.add("sticky");
+            nav.style.padding = "0";
+            navContainer.style.paddingTop = "10px";
+          } else {
+            nav.classList.remove("sticky");
+            nav.style.padding = "";
+            navContainer.style.paddingTop = "";
+          }
+        },
+        { rootMargin: "-125px 0px 0px 0px" } // Adjust based on header height
+      );
+
+      observer.observe(header);
     </script>
   </body>
 </html>
