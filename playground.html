@@ -227,7 +227,7 @@
       </div>
 
       <div class="controls-group">
-        <h3>Undo/Redo</h3>
+        <h3>Undo/Redo Tag Edit</h3>
         <button id="undoButton" title="Undo the last action.">Undo</button>
         <button id="redoButton" title="Redo the last undone action.">
           Redo
@@ -498,6 +498,11 @@
         orbityInstance.updateOptions({
           easingProfile: easingProfileControl.value,
         });
+        if (easingProfileControl.value === "Custom") {
+          customEasingSettings.style.display = "block";
+        } else {
+          customEasingSettings.style.display = "none";
+        }
       });
       enableDragControl.addEventListener("change", () => {
         orbityInstance.updateOptions({ enableDrag: enableDragControl.checked });
@@ -517,6 +522,26 @@
       fontWeightControl.addEventListener("change", updateOrbityOptions);
       majorRadiusControl.addEventListener("input", updateOrbityOptions);
       minorRadiusControl.addEventListener("input", updateOrbityOptions);
+
+      pauseResumeButton.addEventListener("click", () => {
+        if (orbityInstance.settings.paused) {
+          orbityInstance.resume();
+          pauseResumeButton.textContent = "Pause cloud";
+        } else {
+          orbityInstance.pause();
+          pauseResumeButton.textContent = "Resume cloud";
+        }
+      });
+
+      autoSpinControl.addEventListener("change", () => {
+        orbityInstance.updateOptions({
+          autoSpin: autoSpinControl.checked,
+        });
+        if (!orbityInstance.settings.paused && autoSpinControl.checked) {
+          orbityInstance.velocity.x = orbityInstance.settings.speed * 0.1;
+          orbityInstance.velocity.y = orbityInstance.settings.speed * 0.1;
+        }
+      });
 
       pauseResumeButton.addEventListener("click", () => {
         if (orbityInstance.settings.paused) {

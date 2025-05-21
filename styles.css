@@ -663,4 +663,89 @@ td {
     font-size: 0.7rem;
     padding: 3px 6px;
   }
+
+  header,
+  footer {
+    font-size: 13px;
+    padding: 0.5em;
+  }
+
+  .controls {
+    max-height: 75vh;
+    min-height: 120px;
+    padding: 0.2em;
+  }
+
+  .controls-group {
+    padding: 0.4em;
+  }
+
+  canvas,
+  #orbityCanvas {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 35vw !important;
+    min-height: 80px;
+  }
+}
+
+/* Responsive controls and canvas for mobile friendliness */
+@media (max-width: 900px) {
+  .controls {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+  canvas,
+  #orbityCanvas {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 50vw !important;
+    min-height: 250px;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 700px) {
+  .controls {
+    max-height: 60vh;
+    min-height: 300px;
+    overflow-y: auto;
+    padding: 0.5em;
+  }
+  canvas,
+  #orbityCanvas {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 40vw !important;
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 15px;
+  }
+  .controls {
+    max-height: 70vh;
+    min-height: 200px;
+    padding: 0.3em;
+  }
+  .controls-group {
+    padding: 0.7em;
+  }
+  canvas,
+  #orbityCanvas {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 40vw !important;
+    min-height: 120px;
+  }
+}
+
+/* Always allow controls to scroll on mobile */
+.controls {
+  -webkit-overflow-scrolling: touch;
 }

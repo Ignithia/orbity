@@ -4,7 +4,6 @@ Thanks to the original author for the inspiration! */
 
 const DEFAULT_SHAPE = "sphere";
 
-// Add default easing profiles
 const EASING_PROFILES = {
   Snappy: { easeIn: 0.2, friction: 0.9 },
   Smooth: { easeIn: 0.1, friction: 0.95 },
@@ -174,6 +173,7 @@ class Orbity {
       _color: data.color,
       _opacity: 1,
     }));
+    this._reindexTags();
     this._positionTags();
     this._draw();
   }
@@ -204,8 +204,9 @@ class Orbity {
       _opacity: 1,
     };
     this.tags.push(newTag);
-    this.undoStack.push({ action: "add", tag: newTag });
+    this.undoStack.push({ action: "add", tag: { ...newTag } });
     this.redoStack = [];
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -216,8 +217,9 @@ class Orbity {
   removeTag(index) {
     if (index < 0 || index >= this.tags.length) return;
     const removedTag = this.tags.splice(index, 1)[0];
-    this.undoStack.push({ action: "remove", tag: removedTag, index });
+    this.undoStack.push({ action: "remove", tag: { ...removedTag }, index });
     this.redoStack = [];
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -243,6 +245,7 @@ class Orbity {
       newData: { ...this.tags[index] },
     });
     this.redoStack = [];
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -259,12 +262,13 @@ class Orbity {
         this.tags.pop();
         break;
       case "remove":
-        this.tags.splice(lastAction.index, 0, lastAction.tag);
+        this.tags.splice(lastAction.index, 0, { ...lastAction.tag });
         break;
       case "update":
         Object.assign(this.tags[lastAction.oldData.index], lastAction.oldData);
         break;
     }
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -278,7 +282,7 @@ class Orbity {
 
     switch (lastAction.action) {
       case "add":
-        this.tags.push(lastAction.tag);
+        this.tags.push({ ...lastAction.tag });
         break;
       case "remove":
         this.tags.splice(lastAction.index, 1);
@@ -287,6 +291,7 @@ class Orbity {
         Object.assign(this.tags[lastAction.newData.index], lastAction.newData);
         break;
     }
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -295,6 +300,8 @@ class Orbity {
    */
   clearTags() {
     this.tags = [];
+    this._reindexTags();
+    this._positionTags();
   }
 
   /**
@@ -440,11 +447,27 @@ class Orbity {
    * @private
    */
   _bindDragEvents(startEvent, moveEvent, endEvent, getPosition) {
+    if (!this._dragHandlers) this._dragHandlers = {};
+
+    if (this._dragHandlers[startEvent]) {
+      this.canvas.removeEventListener(
+        startEvent,
+        this._dragHandlers[startEvent]
+      );
+      this.canvas.removeEventListener(moveEvent, this._dragHandlers[moveEvent]);
+      this.canvas.removeEventListener(endEvent, this._dragHandlers[endEvent]);
+      this.canvas.removeEventListener(
+        "mouseleave",
+        this._dragHandlers.mouseleave
+      );
+    }
+
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
 
     const startHandler = (e) => {
+      if (!this.settings.enableDrag) return;
       isDragging = true;
       const pos = getPosition(e);
       lastX = pos.x;
@@ -457,7 +480,7 @@ class Orbity {
     };
 
     const moveHandler = (e) => {
-      if (!isDragging) return;
+      if (!this.settings.enableDrag || !isDragging) return;
 
       const pos = getPosition(e);
       const dx = pos.x - lastX;
@@ -484,11 +507,13 @@ class Orbity {
     };
 
     const endHandler = () => {
+      if (!this.settings.enableDrag) return;
       isDragging = false;
       this._applyDragEasing();
     };
 
     const leaveHandler = () => {
+      if (!this.settings.enableDrag) return;
       if (isDragging) {
         isDragging = false;
         this._applyDragEasing();
@@ -499,6 +524,11 @@ class Orbity {
     this.canvas.addEventListener(moveEvent, moveHandler, { passive: false });
     this.canvas.addEventListener(endEvent, endHandler);
     this.canvas.addEventListener("mouseleave", leaveHandler);
+
+    this._dragHandlers[startEvent] = startHandler;
+    this._dragHandlers[moveEvent] = moveHandler;
+    this._dragHandlers[endEvent] = endHandler;
+    this._dragHandlers.mouseleave = leaveHandler;
   }
 
   /**
@@ -565,16 +595,10 @@ class Orbity {
    * @private
    */
   _bindMouse() {
-    if (!this.settings.enableDrag) return;
-
     this._bindDragEvents("mousedown", "mousemove", "mouseup", (e) => ({
       x: e.clientX,
       y: e.clientY,
     }));
-
-    this.canvas.addEventListener("mouseleave", () => {
-      this._applyDragEasing();
-    });
   }
 
   /**
@@ -582,6 +606,10 @@ class Orbity {
    * @param {string} profileName - The name of the easing profile (e.g., "Smooth").
    */
   setEasingProfile(profileName) {
+    if (profileName === "Custom") {
+      this.settings.easingProfile = profileName;
+      return;
+    }
     if (EASING_PROFILES[profileName]) {
       this.settings.easingProfile = profileName;
       const { easeIn, friction } = EASING_PROFILES[profileName];
@@ -791,13 +819,12 @@ class Orbity {
 
       case "cube":
         const side = Math.ceil(Math.cbrt(N));
-        const threshold = 0.1; // Threshold to avoid placing tags near the center
+        const threshold = 0.1;
         let validTags = 0;
 
         this.tags.forEach((tag) => {
           let x, y, z;
 
-          // Find the next valid position
           do {
             x = (validTags % side) - side / 2 + 0.5;
             y = (Math.floor(validTags / side) % side) - side / 2 + 0.5;
@@ -858,7 +885,7 @@ class Orbity {
         });
         break;
       case "cylinder":
-        const heightStep = (2 * R) / Math.ceil(N / 10); // Adjust height step for spacing
+        const heightStep = (2 * R) / Math.ceil(N / 10);
         const circumferenceTags = Math.ceil(Math.sqrt(N));
         this.tags.forEach((tag, i) => {
           const level = Math.floor(i / circumferenceTags);
@@ -868,6 +895,20 @@ class Orbity {
           tag.x = R * Math.cos(angle);
           tag.y = height;
           tag.z = R * Math.sin(angle);
+        });
+        break;
+
+      case "plane":
+        const gridCols = Math.ceil(Math.sqrt(N));
+        const gridRows = Math.ceil(N / gridCols);
+        const spacingX = (2 * R) / (gridCols - 1 || 1);
+        const spacingZ = (2 * R) / (gridRows - 1 || 1);
+        this.tags.forEach((tag, i) => {
+          const col = i % gridCols;
+          const row = Math.floor(i / gridCols);
+          tag.x = -R + col * spacingX;
+          tag.y = 0;
+          tag.z = -R + row * spacingZ;
         });
         break;
 
@@ -951,7 +992,7 @@ class Orbity {
   _animate() {
     if (this.settings.paused) return;
 
-    if (this.settings.autoSpin) {
+    if (this.settings.autoSpin && !this.settings.paused) {
       const { customEaseIn, autoEasing } = this.settings;
       if (autoEasing) {
         this.velocity.x +=
@@ -1009,7 +1050,10 @@ class Orbity {
    */
   pause() {
     this.settings.paused = true;
-    if (this.animFrame) cancelAnimationFrame(this.animFrame);
+    if (this.animFrame) {
+      cancelAnimationFrame(this.animFrame);
+      this.animFrame = null;
+    }
     this._events.pause?.forEach((cb) => cb());
   }
 
@@ -1017,6 +1061,7 @@ class Orbity {
    * Resumes the animation of the tag cloud.
    */
   resume() {
+    if (!this.settings.paused) return;
     this.settings.paused = false;
     this._animate();
     this._events.resume?.forEach((cb) => cb());
@@ -1041,6 +1086,16 @@ class Orbity {
       this.canvas.replaceWith(this.canvas.cloneNode(true));
     }
     this.tags = [];
+  }
+
+  /**
+   * Updates the index property of each tag to match its position in the tags array.
+   * @private
+   */
+  _reindexTags() {
+    this.tags.forEach((tag, i) => {
+      tag.index = i;
+    });
   }
 }
 export default Orbity;
