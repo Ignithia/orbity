@@ -74,7 +74,14 @@
         <h3>Animation Settings</h3>
         <label title="Set the rotation speed of the tag cloud.">
           Speed:
-          <input type="range" id="speedControl" min="0" max="20" value="1" />
+          <input
+            type="range"
+            id="speedControl"
+            min="0"
+            max="0.05"
+            step="0.001"
+            value="0.02"
+          />
         </label>
         <label title="Set the maximum velocity for tag cloud rotation.">
           Max Velocity:
@@ -391,7 +398,7 @@
 
       let orbityInstance = new Orbity(canvas, {
         radius: parseInt(radiusControl.value),
-        speed: parseFloat(speedControl.value) * 0.001,
+        speed: parseFloat(speedControl.value),
         maxVelocity: parseFloat(maxVelocityControl.value),
         enableTouch: enableTouchControl.checked,
         enableOrientation: enableOrientationControl.checked,
@@ -409,7 +416,19 @@
         majorRadius: parseInt(majorRadiusControl.value),
         minorRadius: parseInt(minorRadiusControl.value),
       });
-
+      // Debug initial settings and velocity
+      console.debug("[Orbity Playground Init]", {
+        speed: orbityInstance.settings.speed,
+        autoSpin: orbityInstance.settings.autoSpin,
+        velocity: { ...orbityInstance.velocity },
+      });
+      if (orbityInstance.settings.autoSpin) {
+        orbityInstance.velocity.x = orbityInstance.settings.speed;
+        orbityInstance.velocity.y = orbityInstance.settings.speed;
+        console.debug("[Orbity Playground Set Initial Velocity]", {
+          velocity: { ...orbityInstance.velocity },
+        });
+      }
       orbityInstance.setTags([
         { text: "JavaScript", color: "#f7df1e" },
         { text: "HTML", color: "#e34c26" },
@@ -432,12 +451,15 @@
         { text: "Scala", color: "#c22d40" },
         { text: "Perl", color: "#0298c3" },
       ]);
+      console.debug("[Orbity Playground After setTags]", {
+        velocity: { ...orbityInstance.velocity },
+      });
       updateTagPreview();
 
       function updateOrbityOptions() {
         orbityInstance.updateOptions({
           radius: parseInt(radiusControl.value),
-          speed: parseFloat(speedControl.value) * 0.001,
+          speed: parseFloat(speedControl.value),
           maxVelocity: parseFloat(maxVelocityControl.value),
           enableTouch: enableTouchControl.checked,
           enableOrientation: enableOrientationControl.checked,
@@ -493,6 +515,10 @@
       });
       autoSpinControl.addEventListener("change", () => {
         orbityInstance.updateOptions({ autoSpin: autoSpinControl.checked });
+        if (!orbityInstance.settings.paused && autoSpinControl.checked) {
+          orbityInstance.velocity.x = orbityInstance.settings.speed;
+          orbityInstance.velocity.y = orbityInstance.settings.speed;
+        }
       });
       easingProfileControl.addEventListener("change", () => {
         orbityInstance.updateOptions({
@@ -538,8 +564,8 @@
           autoSpin: autoSpinControl.checked,
         });
         if (!orbityInstance.settings.paused && autoSpinControl.checked) {
-          orbityInstance.velocity.x = orbityInstance.settings.speed * 0.1;
-          orbityInstance.velocity.y = orbityInstance.settings.speed * 0.1;
+          orbityInstance.velocity.x = orbityInstance.settings.speed;
+          orbityInstance.velocity.y = orbityInstance.settings.speed;
         }
       });
 
@@ -595,7 +621,7 @@
 
       speedControl.addEventListener("input", () => {
         orbityInstance.updateOptions({
-          speed: parseFloat(speedControl.value) * 0.001,
+          speed: parseFloat(speedControl.value),
         });
       });
 
@@ -651,7 +677,7 @@
         const generatedCode = `
 const orbityInstance = new Orbity(canvas, {
   radius: ${escapeHTML(radiusControl.value)},
-  speed: ${escapeHTML((parseFloat(speedControl.value) * 0.001).toString())},
+  speed: ${escapeHTML(speedControl.value)},
   maxVelocity: ${escapeHTML(maxVelocityControl.value)},
   enableTouch: ${escapeHTML(enableTouchControl.checked.toString())},
   enableOrientation: ${escapeHTML(enableOrientationControl.checked.toString())},
@@ -765,7 +791,7 @@ orbityInstance.setTags([
 
       resetSettingsButton.addEventListener("click", () => {
         radiusControl.value = 200;
-        speedControl.value = 1;
+        speedControl.value = 0.02;
         maxVelocityControl.value = 0.5;
         shapeControl.value = "sphere";
         enableTouchControl.checked = true;
@@ -786,7 +812,7 @@ orbityInstance.setTags([
 
         orbityInstance.updateOptions({
           radius: 200,
-          speed: 0.001,
+          speed: 0.02,
           maxVelocity: 0.5,
           shape: "sphere",
           enableTouch: true,
@@ -830,7 +856,7 @@ orbityInstance.setTags([
         const config = {
           settings: {
             radius: parseInt(radiusControl.value),
-            speed: parseFloat(speedControl.value) * 0.001,
+            speed: parseFloat(speedControl.value),
             maxVelocity: parseFloat(maxVelocityControl.value),
             shape: shapeControl.value,
             enableTouch: enableTouchControl.checked,
@@ -884,7 +910,7 @@ orbityInstance.setTags([
                 ) {
                   const settings = config.settings;
                   radiusControl.value = settings.radius || 200;
-                  speedControl.value = (settings.speed || 0.001) * 1000;
+                  speedControl.value = settings.speed || 0.02;
                   maxVelocityControl.value = settings.maxVelocity || 0.5;
                   shapeControl.value = settings.shape || "sphere";
                   enableTouchControl.checked = settings.enableTouch || false;

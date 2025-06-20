@@ -1,0 +1,12 @@
+playground.html
+.vscode/
+node_modules/
+dist/
+test/
+tests/
+.env
+.DS_Store
+*.log
+*.md
+.gitignore
+npm-debug.log

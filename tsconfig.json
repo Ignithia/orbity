@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "ESNext",
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
+    "skipLibCheck": true
+  },
+  "include": ["src", "wrappers", "index.d.ts"],
+  "exclude": ["node_modules", "dist", "tests"]
+}
