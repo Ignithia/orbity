@@ -1023,9 +1023,8 @@ class Orbity {
         const maxZ = center.x * 2;
         const minZ = -center.x * 2;
         const normalizedZ = (tag.z - minZ) / (maxZ - minZ);
-        const opacity = Math.max(0.2, Math.min(1, normalizedZ));
+        const opacity = Math.max(0.2, Math.min(1, 1 - normalizedZ));
         ctx.globalAlpha = opacity;
-        // Focus style
         if (this._focusedIndex === tag.index) {
           ctx.save();
           ctx.strokeStyle = "#ffc845";
@@ -1035,7 +1034,6 @@ class Orbity {
           ctx.stroke();
           ctx.restore();
         }
-        // Render image
         if (tag.imageUrl) {
           if (!tag._img) {
             tag._img = new window.Image();
@@ -1059,7 +1057,6 @@ class Orbity {
             continue;
           }
         }
-        // Render SVG
         if (tag.svg) {
           if (!tag._svg) {
             const svg = new window.Image();
@@ -1088,7 +1085,6 @@ class Orbity {
             continue;
           }
         }
-        // Render text
         if (tag.text) {
           ctx.fillStyle = tag._color || tag.color || "#fff";
           ctx.font = `${this.settings.customFontWeight} ${fontSize}px ${this.settings.customFont}`;

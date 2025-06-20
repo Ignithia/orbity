@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2025-06-21
+
+### Fixed
+
+- Tag opacity now correctly reflects depth: closer tags are more opaque, further tags are more transparent.
+
 ## [1.0.1] - 2025-06-20
 
 ### Fixed
