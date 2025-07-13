@@ -1225,5 +1225,33 @@ class Orbity {
       tag.index = i;
     });
   }
+
+  /**
+   * Registers an event listener for Orbity events (e.g., 'tagClick', 'tagHover', 'tagLeave').
+   * @param {string} event - The event name.
+   * @param {Function} callback - The callback function.
+   */
+  on(event, callback) {
+    if (this._events[event]) {
+      this._events[event].push(callback);
+    }
+  }
+
+  /**
+   * Removes an event listener for Orbity events. If no callback is provided, removes all listeners for the event.
+   * @param {string} event - The event name.
+   * @param {Function} [callback] - The callback function to remove.
+   */
+  off(event, callback) {
+    if (this._events[event]) {
+      if (!callback) {
+        this._events[event] = [];
+      } else {
+        this._events[event] = this._events[event].filter(
+          (cb) => cb !== callback
+        );
+      }
+    }
+  }
 }
 export default Orbity;
