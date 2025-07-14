@@ -4,7 +4,6 @@ Thanks to the original author for the inspiration! */
 
 const DEFAULT_SHAPE = "sphere";
 
-// Add default easing profiles
 const EASING_PROFILES = {
   Snappy: { easeIn: 0.2, friction: 0.9 },
   Smooth: { easeIn: 0.1, friction: 0.95 },
@@ -66,6 +65,7 @@ class Orbity {
         customFriction: 0.95,
         autoEasing: true,
         minVelocityThreshold: 0.005,
+        dragSensitivity: 2,
       },
       options
     );
@@ -73,8 +73,8 @@ class Orbity {
     this.velocity = { x: 0, y: 0 };
 
     if (this.settings.autoSpin) {
-      this.velocity.x = this.settings.speed * 0.1;
-      this.velocity.y = this.settings.speed * 0.1;
+      this.velocity.x = this.settings.speed;
+      this.velocity.y = this.settings.speed;
     }
 
     this.touch = { x: 0, y: 0, active: false };
@@ -85,13 +85,14 @@ class Orbity {
     this.redoStack = [];
 
     this.settings.easing = Math.min(Math.max(this.settings.easing, 0.01), 0.5);
-    this.settings.speed = Math.min(Math.max(this.settings.speed, 0.1), 5);
+    this.settings.speed = Math.min(Math.max(this.settings.speed, 0.001), 5);
     this._orientationHandler = this._handleOrientation.bind(this);
     this._touchStartHandler = this._onTouchStart.bind(this);
     this._touchMoveHandler = this._onTouchMove.bind(this);
     this._mouseMoveHandler = this._onCanvasMouseMove.bind(this);
     this._mouseLeaveHandler = this._onCanvasMouseLeave.bind(this);
     this._clickHandler = this._onCanvasClick.bind(this);
+    this._keyboardHandler = this._onKeyboard.bind(this);
     this._init();
   }
 
@@ -137,8 +138,10 @@ class Orbity {
     this._bindMouse();
     this._bindOrientation();
     this._attachInteraction();
-    this.canvas.setAttribute("role", "img");
+    this.canvas.setAttribute("role", "region");
     this.canvas.setAttribute("aria-label", "3D tag cloud visualization");
+    this.canvas.setAttribute("tabindex", "0");
+    this.canvas.addEventListener("keydown", this._keyboardHandler);
     this._resize();
     this._positionTags();
     this._animate();
@@ -173,7 +176,10 @@ class Orbity {
       _scale: 1,
       _color: data.color,
       _opacity: 1,
+      _img: data.imageUrl ? null : undefined,
+      _svg: data.svg ? null : undefined,
     }));
+    this._reindexTags();
     this._positionTags();
     this._draw();
   }
@@ -202,10 +208,13 @@ class Orbity {
       _scale: 1,
       _color: tagData.color,
       _opacity: 1,
+      _img: tagData.imageUrl ? null : undefined,
+      _svg: tagData.svg ? null : undefined,
     };
     this.tags.push(newTag);
-    this.undoStack.push({ action: "add", tag: newTag });
+    this.undoStack.push({ action: "add", tag: { ...newTag } });
     this.redoStack = [];
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -216,8 +225,9 @@ class Orbity {
   removeTag(index) {
     if (index < 0 || index >= this.tags.length) return;
     const removedTag = this.tags.splice(index, 1)[0];
-    this.undoStack.push({ action: "remove", tag: removedTag, index });
+    this.undoStack.push({ action: "remove", tag: { ...removedTag }, index });
     this.redoStack = [];
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -243,6 +253,7 @@ class Orbity {
       newData: { ...this.tags[index] },
     });
     this.redoStack = [];
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -259,12 +270,13 @@ class Orbity {
         this.tags.pop();
         break;
       case "remove":
-        this.tags.splice(lastAction.index, 0, lastAction.tag);
+        this.tags.splice(lastAction.index, 0, { ...lastAction.tag });
         break;
       case "update":
         Object.assign(this.tags[lastAction.oldData.index], lastAction.oldData);
         break;
     }
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -278,7 +290,7 @@ class Orbity {
 
     switch (lastAction.action) {
       case "add":
-        this.tags.push(lastAction.tag);
+        this.tags.push({ ...lastAction.tag });
         break;
       case "remove":
         this.tags.splice(lastAction.index, 1);
@@ -287,6 +299,7 @@ class Orbity {
         Object.assign(this.tags[lastAction.newData.index], lastAction.newData);
         break;
     }
+    this._reindexTags();
     this._positionTags();
   }
 
@@ -295,6 +308,8 @@ class Orbity {
    */
   clearTags() {
     this.tags = [];
+    this._reindexTags();
+    this._positionTags();
   }
 
   /**
@@ -440,28 +455,51 @@ class Orbity {
    * @private
    */
   _bindDragEvents(startEvent, moveEvent, endEvent, getPosition) {
+    if (!this._dragHandlers) this._dragHandlers = {};
+
+    if (this._dragHandlers[startEvent]) {
+      this.canvas.removeEventListener(
+        startEvent,
+        this._dragHandlers[startEvent]
+      );
+      this.canvas.removeEventListener(moveEvent, this._dragHandlers[moveEvent]);
+      this.canvas.removeEventListener(endEvent, this._dragHandlers[endEvent]);
+      this.canvas.removeEventListener(
+        "mouseleave",
+        this._dragHandlers.mouseleave
+      );
+      if (this._dragHandlers.windowMouseUp) {
+        window.removeEventListener("mouseup", this._dragHandlers.windowMouseUp);
+      }
+    }
+
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
 
     const startHandler = (e) => {
+      if (!this.settings.enableDrag) return;
       isDragging = true;
       const pos = getPosition(e);
       lastX = pos.x;
       lastY = pos.y;
 
       if (this.velocity.x === 0 && this.velocity.y === 0) {
-        this.velocity.x = this.settings.speed * 0.1;
-        this.velocity.y = this.settings.speed * 0.1;
+        this.velocity.x = this.settings.speed;
+        this.velocity.y = this.settings.speed;
+      }
+      if (endEvent === "mouseup") {
+        window.addEventListener("mouseup", endHandler);
+        this._dragHandlers.windowMouseUp = endHandler;
       }
     };
 
     const moveHandler = (e) => {
-      if (!isDragging) return;
+      if (!this.settings.enableDrag || !isDragging) return;
 
       const pos = getPosition(e);
-      const dx = pos.x - lastX;
-      const dy = pos.y - lastY;
+      const dx = (pos.x - lastX) * (this.settings.dragSensitivity || 1);
+      const dy = (pos.y - lastY) * (this.settings.dragSensitivity || 1);
 
       if (this.settings.maxVelocity > 0) {
         this.velocity.x = Math.min(
@@ -473,8 +511,8 @@ class Orbity {
           this.settings.maxVelocity
         );
       } else {
-        this.velocity.x = dy * this.settings.speed * 0.1;
-        this.velocity.y = dx * this.settings.speed * 0.1;
+        this.velocity.x = dy * this.settings.speed;
+        this.velocity.y = dx * this.settings.speed;
       }
 
       lastX = pos.x;
@@ -484,11 +522,13 @@ class Orbity {
     };
 
     const endHandler = () => {
+      if (!this.settings.enableDrag) return;
       isDragging = false;
       this._applyDragEasing();
     };
 
     const leaveHandler = () => {
+      if (!this.settings.enableDrag) return;
       if (isDragging) {
         isDragging = false;
         this._applyDragEasing();
@@ -499,6 +539,11 @@ class Orbity {
     this.canvas.addEventListener(moveEvent, moveHandler, { passive: false });
     this.canvas.addEventListener(endEvent, endHandler);
     this.canvas.addEventListener("mouseleave", leaveHandler);
+
+    this._dragHandlers[startEvent] = startHandler;
+    this._dragHandlers[moveEvent] = moveHandler;
+    this._dragHandlers[endEvent] = endHandler;
+    this._dragHandlers.mouseleave = leaveHandler;
   }
 
   /**
@@ -536,8 +581,10 @@ class Orbity {
   _onTouchMove(event) {
     if (event.touches.length === 1 && this.touch.active) {
       const touch = event.touches[0];
-      const dx = touch.clientX - this.touch.x;
-      const dy = touch.clientY - this.touch.y;
+      const dx =
+        (touch.clientX - this.touch.x) * (this.settings.dragSensitivity || 1);
+      const dy =
+        (touch.clientY - this.touch.y) * (this.settings.dragSensitivity || 1);
 
       if (this.settings.maxVelocity > 0) {
         this.velocity.x = Math.min(
@@ -565,16 +612,10 @@ class Orbity {
    * @private
    */
   _bindMouse() {
-    if (!this.settings.enableDrag) return;
-
     this._bindDragEvents("mousedown", "mousemove", "mouseup", (e) => ({
       x: e.clientX,
       y: e.clientY,
     }));
-
-    this.canvas.addEventListener("mouseleave", () => {
-      this._applyDragEasing();
-    });
   }
 
   /**
@@ -582,6 +623,10 @@ class Orbity {
    * @param {string} profileName - The name of the easing profile (e.g., "Smooth").
    */
   setEasingProfile(profileName) {
+    if (profileName === "Custom") {
+      this.settings.easingProfile = profileName;
+      return;
+    }
     if (EASING_PROFILES[profileName]) {
       this.settings.easingProfile = profileName;
       const { easeIn, friction } = EASING_PROFILES[profileName];
@@ -738,6 +783,53 @@ class Orbity {
     }
   }
 
+  /**
+   * Handles keyboard events for accessibility and navigation.
+   * @private
+   * @param {KeyboardEvent} event
+   */
+  _onKeyboard(event) {
+    switch (event.key) {
+      case "ArrowLeft":
+        this.rotation.y -= 0.1;
+        event.preventDefault();
+        break;
+      case "ArrowRight":
+        this.rotation.y += 0.1;
+        event.preventDefault();
+        break;
+      case "ArrowUp":
+        this.rotation.x -= 0.1;
+        event.preventDefault();
+        break;
+      case "ArrowDown":
+        this.rotation.x += 0.1;
+        event.preventDefault();
+        break;
+      case "Home":
+        this.rotation.x = 0;
+        this.rotation.y = 0;
+        event.preventDefault();
+        break;
+      case "End":
+        this.rotation.x = 0;
+        this.rotation.y = 0;
+        event.preventDefault();
+        break;
+      case " ":
+      case "Spacebar":
+        if (this.settings.paused) {
+          this.resume();
+        } else {
+          this.pause();
+        }
+        event.preventDefault();
+        break;
+      default:
+        break;
+    }
+  }
+
   _getPointer(e) {
     const rect = this.canvas.getBoundingClientRect();
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -791,13 +883,12 @@ class Orbity {
 
       case "cube":
         const side = Math.ceil(Math.cbrt(N));
-        const threshold = 0.1; // Threshold to avoid placing tags near the center
+        const threshold = 0.1;
         let validTags = 0;
 
         this.tags.forEach((tag) => {
           let x, y, z;
 
-          // Find the next valid position
           do {
             x = (validTags % side) - side / 2 + 0.5;
             y = (Math.floor(validTags / side) % side) - side / 2 + 0.5;
@@ -858,7 +949,7 @@ class Orbity {
         });
         break;
       case "cylinder":
-        const heightStep = (2 * R) / Math.ceil(N / 10); // Adjust height step for spacing
+        const heightStep = (2 * R) / Math.ceil(N / 10);
         const circumferenceTags = Math.ceil(Math.sqrt(N));
         this.tags.forEach((tag, i) => {
           const level = Math.floor(i / circumferenceTags);
@@ -868,6 +959,20 @@ class Orbity {
           tag.x = R * Math.cos(angle);
           tag.y = height;
           tag.z = R * Math.sin(angle);
+        });
+        break;
+
+      case "plane":
+        const gridCols = Math.ceil(Math.sqrt(N));
+        const gridRows = Math.ceil(N / gridCols);
+        const spacingX = (2 * R) / (gridCols - 1 || 1);
+        const spacingZ = (2 * R) / (gridRows - 1 || 1);
+        this.tags.forEach((tag, i) => {
+          const col = i % gridCols;
+          const row = Math.floor(i / gridCols);
+          tag.x = -R + col * spacingX;
+          tag.y = 0;
+          tag.z = -R + row * spacingZ;
         });
         break;
 
@@ -890,23 +995,20 @@ class Orbity {
   _draw() {
     const { ctx, canvas, center } = this;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     const sortedTags = [...this.tags]
       .filter(
         (tag) =>
           tag &&
-          typeof tag.text === "string" &&
+          (typeof tag.text === "string" || tag.imageUrl || tag.svg) &&
           typeof tag.x === "number" &&
           typeof tag.y === "number" &&
           typeof tag.z === "number"
       )
       .sort((a, b) => b.z - a.z);
-
     for (const tag of sortedTags) {
       try {
         const denominator = center.x * 2 + tag.z;
         const scale = denominator > 0 ? (center.x * 2) / denominator : 1;
-
         const x = isFinite(tag.x * scale + center.x)
           ? tag.x * scale + center.x
           : center.x;
@@ -918,26 +1020,83 @@ class Orbity {
         )
           ? (tag.fontSize || 15) * scale * (tag._scale || 1)
           : 15;
-
-        const text = tag.text;
-
         const maxZ = center.x * 2;
         const minZ = -center.x * 2;
         const normalizedZ = (tag.z - minZ) / (maxZ - minZ);
-        const opacity = Math.max(0.2, Math.min(1, normalizedZ));
-
+        const opacity = Math.max(0.2, Math.min(1, 1 - normalizedZ));
         ctx.globalAlpha = opacity;
-        ctx.fillStyle = tag._color || tag.color || "#fff";
-        ctx.font = `${this.settings.customFontWeight} ${fontSize}px ${this.settings.customFont}`;
-        const metrics = ctx.measureText(text);
-
-        tag._screen = {
-          x,
-          y,
-          width: metrics.width,
-          height: fontSize,
-        };
-        ctx.fillText(text, x - metrics.width / 2, y + fontSize / 2);
+        if (this._focusedIndex === tag.index) {
+          ctx.save();
+          ctx.strokeStyle = "#ffc845";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(x, y, fontSize, 0, 2 * Math.PI);
+          ctx.stroke();
+          ctx.restore();
+        }
+        if (tag.imageUrl) {
+          if (!tag._img) {
+            tag._img = new window.Image();
+            tag._img.src = tag.imageUrl;
+            tag._img.onload = () => this._draw();
+          }
+          if (tag._img.complete && tag._img.naturalWidth) {
+            ctx.drawImage(
+              tag._img,
+              x - fontSize / 2,
+              y - fontSize / 2,
+              fontSize,
+              fontSize
+            );
+            tag._screen = {
+              x,
+              y,
+              width: fontSize,
+              height: fontSize,
+            };
+            continue;
+          }
+        }
+        if (tag.svg) {
+          if (!tag._svg) {
+            const svg = new window.Image();
+            const svgBlob = new Blob([tag.svg], { type: "image/svg+xml" });
+            tag._svgUrl = URL.createObjectURL(svgBlob);
+            svg.src = tag._svgUrl;
+            svg.onload = () => {
+              tag._svg = svg;
+              this._draw();
+            };
+          }
+          if (tag._svg && tag._svg.complete && tag._svg.naturalWidth) {
+            ctx.drawImage(
+              tag._svg,
+              x - fontSize / 2,
+              y - fontSize / 2,
+              fontSize,
+              fontSize
+            );
+            tag._screen = {
+              x,
+              y,
+              width: fontSize,
+              height: fontSize,
+            };
+            continue;
+          }
+        }
+        if (tag.text) {
+          ctx.fillStyle = tag._color || tag.color || "#fff";
+          ctx.font = `${this.settings.customFontWeight} ${fontSize}px ${this.settings.customFont}`;
+          const metrics = ctx.measureText(tag.text);
+          tag._screen = {
+            x,
+            y,
+            width: metrics.width,
+            height: fontSize,
+          };
+          ctx.fillText(tag.text, x - metrics.width / 2, y + fontSize / 2);
+        }
       } catch (error) {
         console.error("Error drawing tag:", tag, error);
       }
@@ -951,16 +1110,25 @@ class Orbity {
   _animate() {
     if (this.settings.paused) return;
 
-    if (this.settings.autoSpin) {
-      const { customEaseIn, autoEasing } = this.settings;
-      if (autoEasing) {
+    if (this.settings.autoSpin && !this.settings.paused) {
+      if (this.settings.autoEasing) {
         this.velocity.x +=
-          (this.settings.speed * 0.1 - this.velocity.x) * customEaseIn;
+          (this.settings.speed - this.velocity.x) * this.settings.customEaseIn;
         this.velocity.y +=
-          (this.settings.speed * 0.1 - this.velocity.y) * customEaseIn;
+          (this.settings.speed - this.velocity.y) * this.settings.customEaseIn;
       } else {
         this.velocity.x = this.settings.speed * 0.1;
         this.velocity.y = this.settings.speed * 0.1;
+      }
+      if (this.settings.maxVelocity > 0) {
+        this.velocity.x = Math.max(
+          -this.settings.maxVelocity,
+          Math.min(this.velocity.x, this.settings.maxVelocity)
+        );
+        this.velocity.y = Math.max(
+          -this.settings.maxVelocity,
+          Math.min(this.velocity.y, this.settings.maxVelocity)
+        );
       }
     }
 
@@ -1009,7 +1177,10 @@ class Orbity {
    */
   pause() {
     this.settings.paused = true;
-    if (this.animFrame) cancelAnimationFrame(this.animFrame);
+    if (this.animFrame) {
+      cancelAnimationFrame(this.animFrame);
+      this.animFrame = null;
+    }
     this._events.pause?.forEach((cb) => cb());
   }
 
@@ -1017,6 +1188,7 @@ class Orbity {
    * Resumes the animation of the tag cloud.
    */
   resume() {
+    if (!this.settings.paused) return;
     this.settings.paused = false;
     this._animate();
     this._events.resume?.forEach((cb) => cb());
@@ -1037,10 +1209,49 @@ class Orbity {
     this.canvas.removeEventListener("mouseleave", this._onCanvasMouseLeave);
     this.canvas.removeEventListener("click", this._onCanvasClick);
     window.removeEventListener("deviceorientation", this._orientationHandler);
+    this.canvas.removeEventListener("keydown", this._keyboardHandler);
     if (this.canvas.parentNode) {
       this.canvas.replaceWith(this.canvas.cloneNode(true));
     }
     this.tags = [];
+  }
+
+  /**
+   * Updates the index property of each tag to match its position in the tags array.
+   * @private
+   */
+  _reindexTags() {
+    this.tags.forEach((tag, i) => {
+      tag.index = i;
+    });
+  }
+
+  /**
+   * Registers an event listener for Orbity events (e.g., 'tagClick', 'tagHover', 'tagLeave').
+   * @param {string} event - The event name.
+   * @param {Function} callback - The callback function.
+   */
+  on(event, callback) {
+    if (this._events[event]) {
+      this._events[event].push(callback);
+    }
+  }
+
+  /**
+   * Removes an event listener for Orbity events. If no callback is provided, removes all listeners for the event.
+   * @param {string} event - The event name.
+   * @param {Function} [callback] - The callback function to remove.
+   */
+  off(event, callback) {
+    if (this._events[event]) {
+      if (!callback) {
+        this._events[event] = [];
+      } else {
+        this._events[event] = this._events[event].filter(
+          (cb) => cb !== callback
+        );
+      }
+    }
   }
 }
 export default Orbity;

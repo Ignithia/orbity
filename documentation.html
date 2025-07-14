@@ -559,47 +559,56 @@ orbityInstance.removeTag("Vue.js");
 orbityInstance.updateTag("Angular", { color: "#c3002f" });
         </code></pre>
 
-        <h2 id="event-listeners">Utilizing Event Listeners</h2>
+        <h2 id="event-listeners">Event Hooks & Listeners</h2>
         <p>
-          Orbity.js provides event listeners to enhance interactivity. Below are
-          some examples:
+          Orbity.js provides a flexible event system that lets you add or remove
+          listeners for tag interactions and other events. Use the
+          <code>on</code> and <code>off</code> methods to register or remove
+          event handlers.
         </p>
-        <h3>1. Handling Tag Click Events</h3>
-        <p>Use the <code>tagClick</code> event to handle clicks on tags:</p>
+        <h3>Supported Events</h3>
+        <ul>
+          <li><code>tagClick</code>: Fired when a tag is clicked.</li>
+          <li><code>tagHover</code>: Fired when a tag is hovered.</li>
+          <li><code>tagLeave</code>: Fired when the mouse leaves a tag.</li>
+        </ul>
+        <h3>Registering an Event Listener</h3>
         <pre><code>
-orbityInstance.on("tagClick", (tag) => {
-  console.log("Tag clicked:", tag.text);
+// Listen for a tag click
+orbityInstance.on("tagClick", (tag, index, event) => {
   alert(`You clicked on ${tag.text}`);
 });
-        </code></pre>
 
-        <h3>2. Handling Tag Hover Events</h3>
-        <p>
-          Use the <code>tagHover</code> event to detect when a tag is hovered
-          over:
-        </p>
-        <pre><code>
-orbityInstance.on("tagHover", (tag) => {
+// Listen for tag hover
+orbityInstance.on("tagHover", (tag, index, event) => {
   console.log("Tag hovered:", tag.text);
 });
-        </code></pre>
 
-        <h3>3. Handling Tag Leave Events</h3>
-        <p>
-          Use the <code>tagLeave</code> event to detect when the mouse leaves a
-          tag:
-        </p>
-        <pre><code>
-orbityInstance.on("tagLeave", (tag) => {
+// Listen for tag leave
+orbityInstance.on("tagLeave", (tag, index, event) => {
   console.log("Mouse left tag:", tag.text);
 });
         </code></pre>
-
-        <h3>4. Removing Event Listeners</h3>
-        <p>To remove an event listener, use the <code>off</code> method:</p>
+        <h3>Removing Event Listeners</h3>
+        <p>
+          To remove an event listener, use the <code>off</code> method. You can
+          remove all listeners for an event, or just a specific callback:
+        </p>
         <pre><code>
+// Remove all tagClick listeners
 orbityInstance.off("tagClick");
+
+// Remove a specific callback
+function onClick(tag) { /* ... */ }
+orbityInstance.on("tagClick", onClick);
+orbityInstance.off("tagClick", onClick);
         </code></pre>
+        <h3>Custom Interactivity</h3>
+        <p>
+          With event hooks, you can easily add tooltips, pop-ups, or any custom
+          UI when a tag is clicked or hovered. This makes Orbity highly
+          extensible for interactive web experiences.
+        </p>
 
         <section id="live-editor">
           <h2>Try It Yourself</h2>
