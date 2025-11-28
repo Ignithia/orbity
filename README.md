@@ -1,105 +1,92 @@
 # Orbity JS Library
 
-Orbity is a JavaScript library for creating and managing a 3D tag cloud visualization. It allows you to display tags in various shapes and provides interactive features for user engagement.
+Orbity is a modern, accessible JavaScript/TypeScript library for creating interactive 3D tag clouds. It supports text, image, and SVG tags, multiple shapes, keyboard navigation, and is framework-friendly (React/Vue wrappers included).
 
 ## Features
 
-- 3D tag cloud rendering
-- Multiple shapes (sphere, cube, pyramid, helix, ring, vertical ring, cylinder)
-- Touch and mouse interaction support
+- 3D tag cloud rendering (Sphere, Cube, Torus, Helix, etc.)
+- Text, image, or SVG tags
+- Touch, mouse, and keyboard interaction
 - Device orientation support
-- Customizable settings (radius, speed, easing, etc.)
+- Undo/redo, dynamic tag management
+- Accessibility: ARIA, keyboard navigation, focus styles
+- Hover/click effects, custom fonts/styles
+- ESM & CJS builds, TypeScript types
+- React and Vue wrappers
+- Unit tested, CI/CD, ready for npm
 
 ## Installation
 
-You can include the library in your project by using a CDN link to the minified version:
-
-```html
-<script src="https://cdn.example.com/orbity.min.js"></script>
-```
-
-Alternatively, you can install it via npm:
-
 ```bash
-npm install orbity-js-library
+npm install orbity
 ```
 
-## Usage
-
-To create a 3D tag cloud, follow these steps:
-
-1. Include the library in your HTML file (if using CDN).
-2. Create an HTML canvas element in your document.
+Or via CDN:
 
 ```html
-<canvas id="tagCloudCanvas"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/orbity/dist/orbity.min.js"></script>
 ```
 
-3. Initialize the Orbity instance in your JavaScript code:
+## Usage (Vanilla JS)
 
-```javascript
+```js
+import Orbity from "orbity";
 const canvas = document.getElementById("tagCloudCanvas");
 const orbity = new Orbity(canvas, {
   radius: 200,
-  speed: 0.01,
   shape: "sphere",
+  hoverEffect: true,
+  clickEffect: true,
+  customFont: "serif",
 });
-```
-
-4. Set the tags to be displayed:
-
-```javascript
 orbity.setTags([
   { text: "JavaScript", color: "#f39c12", fontSize: 20 },
-  { text: "HTML", color: "#e74c3c", fontSize: 18 },
-  { text: "CSS", color: "#3498db", fontSize: 16 },
+  { imageUrl: "logo.png", color: "#fff" },
+  { svg: "<svg ...></svg>", color: "#fff" },
 ]);
 ```
 
-5. Enjoy the interactive 3D tag cloud!
+## React Usage
+
+```tsx
+import ReactOrbity from "orbity/wrappers/ReactOrbity";
+<ReactOrbity tags={[{ text: "React", color: "#61dafb" }]} radius={200} />;
+```
+
+## Vue Usage
+
+```vue
+<VueOrbity :tags="[{ text: 'Vue', color: '#42b883' }]" :radius="200" />
+```
 
 ## API
 
-### `setTags(dataArray)`
+See [index.d.ts](./index.d.ts) for full type definitions.
 
-Sets the tags to be displayed in the 3D tag cloud.
+- `setTags(tags: OrbityTag[])`
+- `addTag(tag: OrbityTag)`
+- `removeTag(index: number)`
+- `updateTag(index: number, data: Partial<OrbityTag>)`
+- `clearTags()`
+- `updateOptions(options: Partial<OrbityOptions>)`
+- `undo()`, `redo()`
+- `pause()`, `resume()`
+- `on(event, callback)`, `off(event, callback)`
 
-- **Parameters**:
-  - `dataArray`: An array of tag data objects, each containing `text`, `color`, and optional `fontSize`.
+## Accessibility
 
-### `addTag(tagData)`
+- All tags are keyboard focusable (Tab/Arrow keys)
+- ARIA roles and labels on canvas and tags
+- Focus styles for keyboard users
 
-Adds a single tag to the 3D tag cloud.
+## Browser Support
 
-- **Parameters**:
-  - `tagData`: An object containing `text`, `color`, and optional `fontSize`.
+- Chrome, Firefox, Safari, Edge, modern mobile browsers
 
-### `removeTag(index)`
+## Contributing
 
-Removes a tag from the 3D tag cloud by its index.
-
-- **Parameters**:
-  - `index`: The index of the tag to remove.
-
-### `updateTag(index, data)`
-
-Updates the data of an existing tag.
-
-- **Parameters**:
-  - `index`: The index of the tag to update.
-  - `data`: An object containing the new data for the tag.
-
-### `clearTags()`
-
-Clears all tags from the 3D tag cloud.
-
-### `updateOptions(newOptions)`
-
-Updates the configuration options for the Orbity instance.
-
-- **Parameters**:
-  - `newOptions`: An object containing new configuration options.
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+MIT

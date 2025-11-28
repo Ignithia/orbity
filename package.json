@@ -1,25 +1,67 @@
 {
-  "name": "orbity-js-library",
-  "version": "1.0.0",
-  "description": "A JavaScript library for creating and managing a 3D tag cloud visualization.",
-  "main": "dist/orbity.min.js",
+  "name": "orbity",
+  "version": "1.1.0",
+  "description": "Interactive 3D tag cloud library for web apps (TypeScript, ESM/CJS, React/Vue wrappers)",
+  "main": "dist/orbity.cjs.js",
+  "module": "dist/orbity.esm.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/orbity.esm.js",
+      "require": "./dist/orbity.cjs.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "index.d.ts",
+    "src/",
+    "wrappers/"
+  ],
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w",
-    "test": "echo \"No tests specified\" && exit 0"
+    "test": "vitest run",
+    "lint": "eslint src/ wrappers/ --ext .ts,.tsx,.vue",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ignithia/orbity"
   },
   "keywords": [
-    "3D",
-    "tag cloud",
+    "3d",
+    "tagcloud",
     "visualization",
-    "library"
+    "typescript",
+    "react",
+    "vue",
+    "canvas",
+    "accessibility"
   ],
-  "author": "Your Name",
+  "author": "Ignithia <contact@ryanvdv-portfolio.be>",
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
-    "rollup": "^2.79.2",
-    "rollup-plugin-terser": "^7.0.2"
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "@types/node": "^24.0.13",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "eslint": "^9.31.0",
+    "react": "^19.1.0",
+    "rollup": "^4.45.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "vue": "^3.5.17"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "vue": ">=3"
+  },
+  "dependencies": {
+    "react-dom": "^19.1.0",
+    "tslib": "^2.8.1"
   }
 }
