@@ -20,26 +20,28 @@ header {
   background: linear-gradient(135deg, #2a3eb1, #1c1e2a);
   color: #f5f7fa;
   width: 100%;
-  padding: 20px 0;
+  padding: 20px 10px;
   text-align: center;
   font-size: 1.8rem;
   font-weight: bold;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
 header h1 {
-  font-size: 48px;
+  font-size: clamp(28px, 6vw, 48px);
   font-weight: 700;
   margin: 0;
   letter-spacing: 1px;
   text-transform: uppercase;
+  word-wrap: break-word;
 }
 
 header p {
-  font-size: 18px;
+  font-size: clamp(14px, 3vw, 18px);
   font-weight: 400;
   margin-top: 10px;
   color: #dcdcdc;
@@ -47,18 +49,20 @@ header p {
 
 nav {
   background: #2a3eb1;
-  padding: 10px 20px;
+  padding: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   position: sticky;
   top: 0;
   z-index: 1000;
+  overflow-x: auto;
 }
 
 nav ul {
   list-style: none;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
   margin: 0;
   padding: 0;
 }
@@ -71,9 +75,11 @@ nav ul li a {
   color: #f5f7fa;
   text-decoration: none;
   font-weight: 600;
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-radius: 5px;
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: clamp(12px, 2.5vw, 16px);
+  white-space: nowrap;
 }
 
 nav ul li a:hover {
@@ -82,28 +88,31 @@ nav ul li a:hover {
 }
 
 main {
-  padding: 20px;
+  padding: 15px;
   max-width: 900px;
   margin: 20px auto;
   background: #1c1e2a;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: calc(100% - 20px);
 }
 
 h2 {
-  font-size: 32px;
+  font-size: clamp(24px, 5vw, 32px);
   font-weight: 600;
   color: #ffc845;
   border-bottom: 2px solid #ffc845;
   padding-bottom: 5px;
   margin-bottom: 15px;
+  word-wrap: break-word;
 }
 
 h3 {
-  font-size: 24px;
+  font-size: clamp(18px, 4vw, 24px);
   font-weight: 600;
   color: #ffc845;
   margin-top: 30px;
+  word-wrap: break-word;
 }
 
 p {
@@ -125,14 +134,16 @@ ul li {
 
 pre {
   background: #1e1e2f;
-  padding: 15px;
+  padding: 10px;
   border: 1px solid #3a3a4f;
   border-radius: 5px;
   overflow-x: auto;
-  font-size: 14px;
+  font-size: clamp(11px, 2vw, 14px);
   font-family: "JetBrains Mono", monospace;
   margin-bottom: 20px;
   color: #dcdcdc;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 code {
@@ -279,17 +290,98 @@ canvas {
   font-weight: bold;
   border: 1px solid #444;
 }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: clamp(12px, 2.5vw, 16px);
+  overflow-x: auto;
+  display: block;
+}
+
+table thead {
+  background: #2a3eb1;
+}
+
+table th,
+table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #3a3a4f;
+}
+
+table th {
+  font-weight: 600;
+  color: #ffc845;
+}
+
+.editor-container {
+  margin: 20px 0;
+}
+
+.editor-container textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(12px, 2vw, 14px);
+  background: #1e1e2f;
+  color: #dcdcdc;
+  border: 1px solid #3a3a4f;
+  border-radius: 5px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
 @media (max-width: 768px) {
+  header {
+    padding: 15px 10px;
+  }
+
   header h1 {
-    font-size: 36px;
+    font-size: clamp(24px, 5vw, 36px);
+  }
+
+  header p {
+    font-size: clamp(12px, 2.5vw, 16px);
+  }
+
+  nav {
+    padding: 8px;
+  }
+
+  nav ul {
+    gap: 5px;
+  }
+
+  nav ul li a {
+    padding: 6px 10px;
+    font-size: 12px;
   }
 
   main {
-    padding: 15px;
+    padding: 10px;
+    margin: 10px;
+    width: calc(100% - 20px);
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin-top: 20px;
+  }
+
+  p,
+  ul li {
+    font-size: 14px;
   }
 
   pre {
-    font-size: 13px;
+    padding: 8px;
+    font-size: 11px;
   }
 
   canvas {
@@ -300,5 +392,74 @@ canvas {
   .controls {
     width: 100%;
     padding: 10px;
+  }
+
+  button,
+  .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  table th,
+  table td {
+    padding: 8px;
+  }
+
+  footer {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  footer ul {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 22px;
+  }
+
+  header p {
+    font-size: 12px;
+  }
+
+  nav ul li a {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 16px;
+  }
+
+  p,
+  ul li {
+    font-size: 13px;
+  }
+
+  pre {
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  table {
+    font-size: 11px;
+  }
+
+  table th,
+  table td {
+    padding: 6px;
   }
 }
