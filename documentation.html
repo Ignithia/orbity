@@ -673,6 +673,45 @@ orbityInstance.off("tagClick", onClick);
         navMenu.classList.toggle("collapsed");
       });
 
+      // Active state based on scroll position
+      const sections = document.querySelectorAll(
+        "main section[id], main h2[id], main h3[id]"
+      );
+      const navLinks = document.querySelectorAll("nav ul li a");
+
+      function updateActiveLink() {
+        let current = "";
+
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (window.scrollY >= sectionTop - 200) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active");
+          }
+        });
+      }
+
+      window.addEventListener("scroll", updateActiveLink);
+      window.addEventListener("load", updateActiveLink);
+
+      // Close mobile menu when clicking a link
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth <= 768) {
+            burgerMenu.classList.remove("expanded");
+            navMenu.classList.remove("expanded");
+            navMenu.classList.add("collapsed");
+          }
+        });
+      });
+
       const header = document.querySelector("header");
       const nav = document.querySelector("nav");
       const navContainer = document.querySelector("nav .container");
