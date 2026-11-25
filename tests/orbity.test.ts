@@ -1,4 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+// @vitest-environment jsdom
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import Orbity from '../src/orbity';
 
 describe('Orbity Core Features', () => {
@@ -7,6 +9,9 @@ describe('Orbity Core Features', () => {
 
   beforeEach(() => {
     canvas = document.createElement('canvas');
+    Object.defineProperty(canvas, 'getContext', {
+      value: () => ({ setTransform: vi.fn() }),
+    });
     orbity = new Orbity(canvas, { radius: 100 });
   });
 
@@ -14,20 +19,20 @@ describe('Orbity Core Features', () => {
     orbity.setTags([]);
     orbity.addTag({ text: 'Test', color: '#fff' });
     expect(orbity.tags.length).toBe(1);
-    expect(orbity.tags[0].text).toBe('Test');
+    expect(orbity.getTags()[0].text).toBe('Test');
   });
 
   it('should remove a tag', () => {
     orbity.setTags([{ text: 'A', color: '#fff' }, { text: 'B', color: '#000' }]);
     orbity.removeTag(0);
     expect(orbity.tags.length).toBe(1);
-    expect(orbity.tags[0].text).toBe('B');
+    expect(orbity.getTags()[0].text).toBe('B');
   });
 
   it('should update a tag', () => {
     orbity.setTags([{ text: 'A', color: '#fff' }]);
     orbity.updateTag(0, { text: 'B' });
-    expect(orbity.tags[0].text).toBe('B');
+    expect(orbity.getTags()[0].text).toBe('B');
   });
 
   it('should undo and redo tag actions', () => {

@@ -43,6 +43,7 @@ export type OrbityEvent = 'tagClick' | 'tagHover' | 'tagLeave' | 'pause' | 'resu
 export default class Orbity {
     constructor(canvas: HTMLCanvasElement, options?: OrbityOptions);
     setTags(tags: OrbityTag[]): void;
+    getTags(): OrbityTag[];
     addTag(tag: OrbityTag): void;
     removeTag(index: number): void;
     updateTag(index: number, data: Partial<OrbityTag>): void;
