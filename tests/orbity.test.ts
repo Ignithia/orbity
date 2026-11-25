@@ -62,6 +62,10 @@ describe('Orbity Core Features', () => {
     expect(orbity.settings.speed).toBe(0.5);
   });
 
+  it('should keep labels at their natural positions by default', () => {
+    expect(orbity.settings.overlapStrategy).toBe('none');
+  });
+
   it('should auto-spin by default', () => {
     orbity._step(1);
     expect(orbity.rotation.x).not.toBe(0);
@@ -73,6 +77,18 @@ describe('Orbity Core Features', () => {
     orbity._hoveredTag = orbity.tags[0];
 
     expect(orbity._targetVelocity().y).toBeGreaterThan(0);
+  });
+
+  it('should keep a vertical ring upright while it spins around its vertical axis', () => {
+    orbity.updateOptions({ shape: 'verticalRing' });
+    orbity.setTags([{ text: 'A' }, { text: 'B' }, { text: 'C' }, { text: 'D' }]);
+
+    expect(orbity.tags.every((tag) => tag.bx === 0)).toBe(true);
+    expect(orbity._locks()).toEqual({ x: true, y: false, fx: orbity.settings.tilt, fy: 0 });
+
+    orbity._step(1);
+    expect(orbity.rotation.x).toBe(orbity.settings.tilt);
+    expect(orbity.rotation.y).not.toBe(0);
   });
 
   it.each([

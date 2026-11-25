@@ -29,7 +29,7 @@
           <h1>Documentation</h1>
           <p>Build interactive, accessible 3D tag clouds.</p>
         </div>
-        <span class="version-badge">v1.1.1</span>
+        <span class="version-badge">v1.1.2</span>
         <a class="header-link" href="playground.html"
           >Open Playground <span aria-hidden="true">↗</span></a
         >
@@ -290,6 +290,16 @@ const orbityInstance = new Orbity(canvas, {
                 cloud follows the pointer.
               </td>
               <td><code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>overlapStrategy</code></td>
+              <td>String</td>
+              <td>
+                Controls how projected label overlaps are handled. <code>"none"</code>
+                keeps labels on their natural positions; <code>"nudge"</code>
+                moves them apart; <code>"hide"</code> fades labels behind nearer ones.
+              </td>
+              <td><code>"none"</code></td>
             </tr>
             <tr>
               <td><code>enableOrientation</code></td>

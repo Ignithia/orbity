@@ -133,7 +133,7 @@ const OPTION_SPECS = {
   outlineColor: str("rgba(0,0,0,0.65)"),
   focusColor: str("#ffc845"),
   // layout
-  overlapStrategy: oneOf("nudge", ["nudge", "hide", "none"]),
+  overlapStrategy: oneOf("none", ["nudge", "hide", "none"]),
   labelGap: num(6, 0, 50),
   nudgeSteps: num(3, 0, 8),
   edgePadding: num(8, 0, 200),
@@ -225,9 +225,9 @@ class Orbity {
    * @param {string} [options.focusColor="#ffc845"]
    *
    * Layout
-   * @param {"nudge"|"hide"|"none"} [options.overlapStrategy="nudge"] - nudge: a label that would collide is pushed
-   *   just far enough aside to clear its neighbour (smoothly, never hopping), and fades out only if it cannot
-   *   fit within `nudgeSteps`. hide: the nearer label wins and the one behind it fades out. none: allow overlap.
+   * @param {"nudge"|"hide"|"none"} [options.overlapStrategy="none"] - none: keep labels at their natural projected
+   *   positions and allow overlap. nudge: push colliding labels apart. hide: keep the nearer label and fade out
+   *   labels behind it.
    * @param {number} [options.labelGap=6] - Minimum space between labels (px).
    * @param {number} [options.nudgeSteps=3] - How far (in label sizes) a label may be pushed from its natural spot before it fades out instead.
    * @param {number} [options.edgePadding=8] - Labels stay this far inside the canvas edge.
@@ -909,7 +909,7 @@ class Orbity {
     const { shape, tilt } = this.settings;
     if (shape === "ring") return { x: true, y: false, fx: tilt, fy: 0 };
     if (shape === "helix") return { x: true, y: false, fx: tilt * 0.5, fy: 0 };
-    if (shape === "verticalRing") return { x: false, y: true, fx: 0, fy: tilt };
+    if (shape === "verticalRing") return { x: true, y: false, fx: tilt, fy: 0 };
     return { x: false, y: false, fx: 0, fy: 0 };
   }
 

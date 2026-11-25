@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2026-11-25
+
+### Changed
+
+- Labels stay at their natural projected positions by default; overlap handling remains configurable.
+
+### Fixed
+
+- Vertical rings stay upright while rotating.
+- Added the missing `tilt` option to the TypeScript definitions.
+
 ## [1.1.0] - 2025-07-14
 
 ### Added

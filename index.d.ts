@@ -19,6 +19,7 @@ export interface OrbityOptions {
     enableOrientation?: boolean;
     maxVelocity?: number;
     shape?: string;
+    tilt?: number;
     enableDrag?: boolean;
     enableClick?: boolean;
     autoSpin?: boolean;
@@ -26,6 +27,7 @@ export interface OrbityOptions {
     pauseOnFocus?: boolean;
     respectReducedMotion?: boolean;
     invertDrag?: boolean;
+    overlapStrategy?: 'nudge' | 'hide' | 'none';
     hoverEffect?: boolean;
     clickEffect?: boolean;
     hoverScale?: number;
