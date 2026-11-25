@@ -7,17 +7,42 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <header>
-      <img
-        src="orbity.svg"
-        alt="Orbity.js Logo"
-        style="height: 40px; margin-right: 10px"
-      />
-      Orbity.js Playground
+  <body class="playground-page">
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="documentation.html" aria-label="Orbity documentation">
+          <img src="orbity.svg" alt="" width="42" height="42" />
+          <span>Orbity<span class="brand-mark">.js</span></span>
+        </a>
+        <div class="header-title">
+          <span class="eyebrow">Interactive demo</span>
+          <h1>Playground</h1>
+        </div>
+        <span class="version-badge">v1.1.1</span>
+        <a class="header-link" href="documentation.html">Documentation <span aria-hidden="true">↗</span></a>
+      </div>
     </header>
-    <canvas id="orbityCanvas" width="800" height="600"></canvas>
-    <div class="controls">
+    <main class="playground-layout">
+      <section class="preview-card" aria-labelledby="preview-title">
+        <div class="preview-heading">
+          <div>
+            <span class="eyebrow">Live preview</span>
+            <h2 id="preview-title">Your tag cloud</h2>
+          </div>
+          <span class="preview-hint">Drag to rotate</span>
+        </div>
+        <canvas
+          id="orbityCanvas"
+          class="orbity-canvas"
+          width="800"
+          height="600"
+          aria-label="Interactive Orbity tag cloud preview"
+        ></canvas>
+        <p id="playgroundStatus" class="status-message" role="status" aria-live="polite">
+          Ready. Adjust a setting or add a tag to get started.
+        </p>
+      </section>
+      <div class="controls" aria-label="Playground settings">
       <div class="controls-group">
         <h3>General Settings</h3>
         <label title="Adjust the radius of the tag cloud.">
@@ -45,7 +70,7 @@
           </select>
         </label>
         <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
-        <div id="torusSettings" style="display: none">
+        <div id="torusSettings" hidden>
           <h4>Torus Settings</h4>
           <label title="Set the major radius of the torus.">
             Major Radius:
@@ -72,15 +97,15 @@
 
       <div class="controls-group">
         <h3>Animation Settings</h3>
-        <label title="Set the rotation speed of the tag cloud.">
+        <label title="Set the rotation speed multiplier. 1 is the library default.">
           Speed:
           <input
             type="range"
             id="speedControl"
-            min="0"
-            max="0.05"
+            min="0.001"
+            max="5"
             step="0.001"
-            value="0.02"
+            value="1"
           />
         </label>
         <label title="Set the maximum velocity for tag cloud rotation.">
@@ -89,14 +114,26 @@
             type="range"
             id="maxVelocityControl"
             min="0"
-            max="2"
-            step="0.1"
+            max="1"
+            step="0.01"
             value="0.5"
           />
         </label>
         <label title="Enable or disable auto-spin for the tag cloud.">
           Auto Spin:
           <input type="checkbox" id="autoSpinControl" checked />
+        </label>
+        <label title="Pause automatic rotation while the pointer hovers over a tag.">
+          Pause on Hover:
+          <input type="checkbox" id="pauseOnHoverControl" />
+        </label>
+        <label title="Pause automatic rotation while a tag has keyboard focus.">
+          Pause on Focus:
+          <input type="checkbox" id="pauseOnFocusControl" checked />
+        </label>
+        <label title="Respect the operating system's reduced-motion preference.">
+          Respect Reduced Motion:
+          <input type="checkbox" id="respectReducedMotionControl" checked />
         </label>
       </div>
 
@@ -129,7 +166,7 @@
             id="fontSizeControl"
             min="10"
             max="50"
-            value="15"
+            value="16"
           />
         </label>
         <label title="Enter tag text. Use commas to add multiple tags at once.">
@@ -170,7 +207,10 @@
         >
           Generate Code
         </button>
-        <pre id="codeOutput" class="code-output"></pre>
+        <button id="copyCodeButton" type="button" class="button-secondary">
+          Copy Code
+        </button>
+        <pre id="codeOutput" class="code-output" aria-label="Generated configuration code"></pre>
       </div>
 
       <div class="controls-group">
@@ -278,7 +318,7 @@
             <option value="Custom">Custom</option>
           </select>
         </label>
-        <div id="customEasingSettings" style="display: none">
+        <div id="customEasingSettings" hidden>
           <label title="Set a custom ease-in multiplier.">
             Custom Ease-In:
             <input
@@ -306,10 +346,10 @@
             <input
               type="range"
               id="minVelocityThresholdControl"
-              min="0.001"
-              max="0.01"
-              step="0.001"
-              value="0.005"
+              min="0"
+              max="0.05"
+              step="0.0001"
+              value="0.0002"
             />
           </label>
         </div>
@@ -324,13 +364,15 @@
         <button
           id="pauseResumeButton"
           title="Pause or resume the tag cloud animation."
+          aria-pressed="false"
         >
           Pause cloud
         </button>
       </div>
-    </div>
+      </div>
+    </main>
     <footer>
-      © 2025 Orbity.js Playground. All rights reserved. Made by Ignithia
+      © 2026 Orbity.js. Built for curious minds.
     </footer>
     <script src="./dist/orbity.min.js"></script>
     <script>
@@ -353,6 +395,11 @@
       const tagPreview = document.getElementById("tagPreview");
       const fontSizeControl = document.getElementById("fontSizeControl");
       const autoSpinControl = document.getElementById("autoSpinControl");
+      const pauseOnHoverControl = document.getElementById("pauseOnHoverControl");
+      const pauseOnFocusControl = document.getElementById("pauseOnFocusControl");
+      const respectReducedMotionControl = document.getElementById(
+        "respectReducedMotionControl"
+      );
       const enableDragControl = document.getElementById("enableDragControl");
       const enableClickControl = document.getElementById("enableClickControl");
       const enableHoverEffectControl = document.getElementById(
@@ -395,40 +442,42 @@
         "minVelocityThresholdControl"
       );
       const autoEasingControl = document.getElementById("autoEasingControl");
+      const playgroundStatus = document.getElementById("playgroundStatus");
+      const copyCodeButton = document.getElementById("copyCodeButton");
 
-      let orbityInstance = new Orbity(canvas, {
-        radius: parseInt(radiusControl.value),
-        speed: parseFloat(speedControl.value),
-        maxVelocity: parseFloat(maxVelocityControl.value),
-        enableTouch: enableTouchControl.checked,
-        enableOrientation: enableOrientationControl.checked,
-        autoSpin: autoSpinControl.checked,
-        enableDrag: enableDragControl.checked,
-        enableClick: enableClickControl.checked,
-        hoverEffect: enableHoverEffectControl.checked,
-        clickEffect: enableClickEffectControl.checked,
-        hoverScale: parseFloat(hoverScaleControl.value),
-        hoverColor: hoverColorControl.value,
-        hoverOpacity: parseFloat(hoverOpacityControl.value),
-        customFont: fontFamilyControl.value,
-        customFontWeight: fontWeightControl.value,
-        shape: shapeControl.value,
-        majorRadius: parseInt(majorRadiusControl.value),
-        minorRadius: parseInt(minorRadiusControl.value),
-      });
-      // Debug initial settings and velocity
-      console.debug("[Orbity Playground Init]", {
-        speed: orbityInstance.settings.speed,
-        autoSpin: orbityInstance.settings.autoSpin,
-        velocity: { ...orbityInstance.velocity },
-      });
-      if (orbityInstance.settings.autoSpin) {
-        orbityInstance.velocity.x = orbityInstance.settings.speed;
-        orbityInstance.velocity.y = orbityInstance.settings.speed;
-        console.debug("[Orbity Playground Set Initial Velocity]", {
-          velocity: { ...orbityInstance.velocity },
-        });
+      function collectOptions() {
+        return {
+          radius: Number(radiusControl.value),
+          speed: Number(speedControl.value),
+          maxVelocity: Number(maxVelocityControl.value),
+          shape: shapeControl.value,
+          majorRadius: Number(majorRadiusControl.value),
+          minorRadius: Number(minorRadiusControl.value),
+          enableTouch: enableTouchControl.checked,
+          enableOrientation: enableOrientationControl.checked,
+          autoSpin: autoSpinControl.checked,
+          pauseOnHover: pauseOnHoverControl.checked,
+          pauseOnFocus: pauseOnFocusControl.checked,
+          respectReducedMotion: respectReducedMotionControl.checked,
+          enableDrag: enableDragControl.checked,
+          enableClick: enableClickControl.checked,
+          hoverEffect: enableHoverEffectControl.checked,
+          clickEffect: enableClickEffectControl.checked,
+          hoverScale: Number(hoverScaleControl.value),
+          hoverColor: hoverColorControl.value,
+          hoverOpacity: Number(hoverOpacityControl.value),
+          customFont: fontFamilyControl.value,
+          customFontWeight: fontWeightControl.value,
+          fontSize: Number(fontSizeControl.value),
+          easingProfile: easingProfileControl.value,
+          customEaseIn: Number(customEaseInControl.value),
+          customFriction: Number(customFrictionControl.value),
+          minVelocityThreshold: Number(minVelocityThresholdControl.value),
+          autoEasing: autoEasingControl.checked,
+        };
       }
+
+      let orbityInstance = new Orbity(canvas, collectOptions());
       orbityInstance.setTags([
         { text: "JavaScript", color: "#f7df1e" },
         { text: "HTML", color: "#e34c26" },
@@ -451,139 +500,115 @@
         { text: "Scala", color: "#c22d40" },
         { text: "Perl", color: "#0298c3" },
       ]);
-      console.debug("[Orbity Playground After setTags]", {
-        velocity: { ...orbityInstance.velocity },
-      });
       updateTagPreview();
+      updateHistoryButtons();
+      updateShapeControls();
 
       function updateOrbityOptions() {
-        orbityInstance.updateOptions({
-          radius: parseInt(radiusControl.value),
-          speed: parseFloat(speedControl.value),
-          maxVelocity: parseFloat(maxVelocityControl.value),
-          enableTouch: enableTouchControl.checked,
-          enableOrientation: enableOrientationControl.checked,
-          autoSpin: autoSpinControl.checked,
-          enableDrag: enableDragControl.checked,
-          enableClick: enableClickControl.checked,
-          hoverEffect: enableHoverEffectControl.checked,
-          clickEffect: enableClickEffectControl.checked,
-          hoverScale: parseFloat(hoverScaleControl.value),
-          hoverColor: hoverColorControl.value,
-          hoverOpacity: parseFloat(hoverOpacityControl.value),
-          customFont: fontFamilyControl.value,
-          customFontWeight: fontWeightControl.value,
-          shape: shapeControl.value,
-          majorRadius: parseInt(majorRadiusControl.value),
-          minorRadius: parseInt(minorRadiusControl.value),
-        });
+        orbityInstance.updateOptions(collectOptions());
+        updateShapeControls();
       }
 
       function updateTagPreview() {
-        if (orbityInstance.tags.length === 0) {
-          tagPreview.textContent = "No tags available";
-        } else {
-          tagPreview.innerHTML = orbityInstance.tags
-            .map(
-              (tag) =>
-                `<span style="color: ${tag.color}; background-color: #333; padding: 5px 10px; border-radius: 4px; margin-right: 10px;">${tag.text}</span>`
-            )
-            .join("");
+        const tags = orbityInstance.getTags();
+        tagPreview.replaceChildren();
+        if (tags.length === 0) {
+          tagPreview.textContent = "No tags yet. Add a few above to get started.";
+          return;
         }
+        tags.forEach((tag, index) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "tag-chip";
+          chip.dataset.index = String(index);
+          chip.textContent = tag.text || tag.alt || `Tag ${index + 1}`;
+          chip.style.setProperty("--tag-color", tag.color || "#ffffff");
+          chip.title = "Edit this tag";
+          tagPreview.append(chip);
+        });
       }
 
-      radiusControl.addEventListener("input", updateOrbityOptions);
-      speedControl.addEventListener("input", updateOrbityOptions);
-      maxVelocityControl.addEventListener("input", updateOrbityOptions);
-      shapeControl.addEventListener("change", () => {
+      function updateHistoryButtons() {
+        undoButton.disabled = !orbityInstance.canUndo;
+        redoButton.disabled = !orbityInstance.canRedo;
+      }
+
+      function updateShapeControls() {
         const shape = shapeControl.value;
-        document.getElementById(
-          "shapePreview"
-        ).textContent = `Preview: ${shape}`;
-        torusSettings.style.display = shape === "torus" ? "block" : "none";
-        updateOrbityOptions();
-      });
-      enableTouchControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableTouch: enableTouchControl.checked,
-        });
-      });
-      enableOrientationControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableOrientation: enableOrientationControl.checked,
-        });
-      });
-      autoSpinControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({ autoSpin: autoSpinControl.checked });
-        if (!orbityInstance.settings.paused && autoSpinControl.checked) {
-          orbityInstance.velocity.x = orbityInstance.settings.speed;
-          orbityInstance.velocity.y = orbityInstance.settings.speed;
-        }
-      });
-      easingProfileControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          easingProfile: easingProfileControl.value,
-        });
-        if (easingProfileControl.value === "Custom") {
-          customEasingSettings.style.display = "block";
-        } else {
-          customEasingSettings.style.display = "none";
-        }
-      });
-      enableDragControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({ enableDrag: enableDragControl.checked });
-      });
-      enableClickControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableClick: enableClickControl.checked,
-        });
+        document.getElementById("shapePreview").textContent =
+          `Preview: ${shape}`;
+        torusSettings.hidden = shape !== "torus";
+        customEasingSettings.hidden = easingProfileControl.value !== "Custom";
+      }
+
+      function setStatus(message, isError = false) {
+        playgroundStatus.textContent = message;
+        playgroundStatus.dataset.state = isError ? "error" : "success";
+      }
+
+      orbityInstance.on("tagsChange", () => {
+        updateTagPreview();
+        updateHistoryButtons();
       });
 
-      enableHoverEffectControl.addEventListener("change", updateOrbityOptions);
-      enableClickEffectControl.addEventListener("change", updateOrbityOptions);
-      hoverScaleControl.addEventListener("input", updateOrbityOptions);
-      hoverColorControl.addEventListener("input", updateOrbityOptions);
-      hoverOpacityControl.addEventListener("input", updateOrbityOptions);
-      fontFamilyControl.addEventListener("change", updateOrbityOptions);
-      fontWeightControl.addEventListener("change", updateOrbityOptions);
-      majorRadiusControl.addEventListener("input", updateOrbityOptions);
-      minorRadiusControl.addEventListener("input", updateOrbityOptions);
-
-      pauseResumeButton.addEventListener("click", () => {
-        if (orbityInstance.settings.paused) {
-          orbityInstance.resume();
-          pauseResumeButton.textContent = "Pause cloud";
-        } else {
-          orbityInstance.pause();
-          pauseResumeButton.textContent = "Resume cloud";
-        }
-      });
-
-      autoSpinControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          autoSpin: autoSpinControl.checked,
-        });
-        if (!orbityInstance.settings.paused && autoSpinControl.checked) {
-          orbityInstance.velocity.x = orbityInstance.settings.speed;
-          orbityInstance.velocity.y = orbityInstance.settings.speed;
-        }
+      const optionControls = [
+        radiusControl,
+        speedControl,
+        maxVelocityControl,
+        shapeControl,
+        enableTouchControl,
+        enableOrientationControl,
+        autoSpinControl,
+        pauseOnHoverControl,
+        pauseOnFocusControl,
+        respectReducedMotionControl,
+        enableDragControl,
+        enableClickControl,
+        enableHoverEffectControl,
+        enableClickEffectControl,
+        hoverScaleControl,
+        hoverColorControl,
+        hoverOpacityControl,
+        fontFamilyControl,
+        fontWeightControl,
+        fontSizeControl,
+        majorRadiusControl,
+        minorRadiusControl,
+        easingProfileControl,
+        customEaseInControl,
+        customFrictionControl,
+        minVelocityThresholdControl,
+        autoEasingControl,
+      ];
+      optionControls.forEach((control) => {
+        const eventName =
+          control.type === "range" || control.type === "color"
+            ? "input"
+            : "change";
+        control.addEventListener(eventName, updateOrbityOptions);
       });
 
       pauseResumeButton.addEventListener("click", () => {
         if (orbityInstance.settings.paused) {
           orbityInstance.resume();
           pauseResumeButton.textContent = "Pause cloud";
+          pauseResumeButton.setAttribute("aria-pressed", "false");
+          setStatus("Animation resumed.");
         } else {
           orbityInstance.pause();
           pauseResumeButton.textContent = "Resume cloud";
+          pauseResumeButton.setAttribute("aria-pressed", "true");
+          setStatus("Animation paused.");
         }
       });
 
-      fontSizeControl.addEventListener("input", () => {
-        orbityInstance.tags.forEach((tag) => {
-          tag.fontSize = parseInt(fontSizeControl.value);
+      fontSizeControl.addEventListener("change", () => {
+        orbityInstance.getTags().forEach((tag, index) => {
+          orbityInstance.updateTag(index, {
+            fontSize: Number(fontSizeControl.value),
+          });
         });
-        orbityInstance._draw();
+        setStatus("Tag font size updated.");
       });
 
       addTagButton.addEventListener("click", () => {
@@ -591,362 +616,255 @@
         const color = tagColorInput.value;
 
         if (!/^#[0-9A-F]{6}$/i.test(color)) {
-          alert(
-            "Invalid color code. Please use a valid hex color (e.g., #ffffff)."
-          );
+          setStatus("Choose a valid six-digit hex color.", true);
           return;
         }
 
-        if (textInput) {
-          const tags = textInput.split(",").map((text) => ({
-            text: text.trim(),
-            color,
-          }));
-          tags.forEach((tag) => orbityInstance.addTag(tag));
-          tagTextInput.value = "";
-          updateTagPreview();
-        } else {
-          alert("Please enter tag text.");
+        const tags = textInput
+          .split(",")
+          .map((text) => text.trim())
+          .filter(Boolean);
+        if (tags.length === 0) {
+          setStatus("Enter at least one tag.", true);
+          return;
         }
+        tags.forEach((text) => orbityInstance.addTag({ text, color }));
+        tagTextInput.value = "";
+        setStatus(`Added ${tags.length} tag${tags.length === 1 ? "" : "s"}.`);
       });
 
       clearTagsButton.addEventListener("click", () => {
         orbityInstance.clearTags();
-        updateTagPreview();
-      });
-
-      radiusControl.addEventListener("input", () => {
-        orbityInstance.updateOptions({ radius: parseInt(radiusControl.value) });
-      });
-
-      speedControl.addEventListener("input", () => {
-        orbityInstance.updateOptions({
-          speed: parseFloat(speedControl.value),
-        });
-      });
-
-      maxVelocityControl.addEventListener("input", () => {
-        orbityInstance.updateOptions({
-          maxVelocity: parseFloat(maxVelocityControl.value),
-        });
-      });
-
-      shapeControl.addEventListener("change", () => {
-        const shape = shapeControl.value;
-        const shapePreview = document.getElementById("shapePreview");
-        shapePreview.textContent = `Preview: ${shape}`;
-        torusSettings.style.display = shape === "torus" ? "block" : "none";
-        orbityInstance.updateOptions({ shape });
-      });
-
-      enableTouchControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableTouch: enableTouchControl.checked,
-        });
-      });
-
-      enableOrientationControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableOrientation: enableOrientationControl.checked,
-        });
-      });
-
-      pauseResumeButton.addEventListener("click", () => {
-        if (orbityInstance.settings.paused) {
-          orbityInstance.resume();
-          pauseResumeButton.textContent = "Pause cloud";
-        } else {
-          orbityInstance.pause();
-          pauseResumeButton.textContent = "Resume cloud";
-        }
-      });
-
-      fontSizeControl.addEventListener("input", () => {
-        orbityInstance.tags.forEach((tag) => {
-          tag.fontSize = parseInt(fontSizeControl.value);
-        });
-        orbityInstance._draw();
+        setStatus("All tags cleared.");
       });
 
       generateCodeButton.addEventListener("click", () => {
-        const escapeHTML = (str) =>
-          str
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-        const generatedCode = `
-const orbityInstance = new Orbity(canvas, {
-  radius: ${escapeHTML(radiusControl.value)},
-  speed: ${escapeHTML(speedControl.value)},
-  maxVelocity: ${escapeHTML(maxVelocityControl.value)},
-  enableTouch: ${escapeHTML(enableTouchControl.checked.toString())},
-  enableOrientation: ${escapeHTML(enableOrientationControl.checked.toString())},
-  autoSpin: ${escapeHTML(autoSpinControl.checked.toString())},
-  enableDrag: ${escapeHTML(enableDragControl.checked.toString())},
-  enableClick: ${escapeHTML(enableClickControl.checked.toString())},
-  hoverEffect: ${escapeHTML(enableHoverEffectControl.checked.toString())},
-  clickEffect: ${escapeHTML(enableClickEffectControl.checked.toString())},
-  hoverScale: ${escapeHTML(hoverScaleControl.value)},
-  hoverColor: "${escapeHTML(hoverColorControl.value)}",
-  hoverOpacity: ${escapeHTML(hoverOpacityControl.value)},
-  customFont: "${escapeHTML(fontFamilyControl.value)}",
-  customFontWeight: "${escapeHTML(fontWeightControl.value)}",
-  shape: "${escapeHTML(shapeControl.value)}",
-  majorRadius: ${escapeHTML(majorRadiusControl.value)},
-  minorRadius: ${escapeHTML(minorRadiusControl.value)},
-});
-orbityInstance.setTags([
-  /* Add your tags here */
-]);
-        `;
-        codeOutput.textContent = generatedCode.trim();
+        codeOutput.textContent = [
+          'const canvas = document.getElementById("orbityCanvas");',
+          "window.orbityDemo?.destroy();",
+          `window.orbityDemo = new Orbity(canvas, ${JSON.stringify(collectOptions(), null, 2)});`,
+          `window.orbityDemo.setTags(${JSON.stringify(serializableTags(), null, 2)});`,
+        ].join("\n");
+        setStatus("Configuration code generated.");
       });
 
       const exportTagsButton = document.getElementById("exportTagsButton");
       exportTagsButton.addEventListener("click", () => {
-        const tags = orbityInstance.tags.map(({ text, color }) => ({
-          text,
-          color,
-        }));
-        const blob = new Blob([JSON.stringify(tags, null, 2)], {
-          type: "application/json",
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "tags.json";
-        a.click();
-        URL.revokeObjectURL(url);
-      });
-
-      autoSpinControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          autoSpin: autoSpinControl.checked,
-        });
-      });
-
-      easingProfileControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          easingProfile: easingProfileControl.value,
-        });
-      });
-
-      enableDragControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableDrag: enableDragControl.checked,
-        });
-      });
-
-      enableClickControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableClick: enableClickControl.checked,
-        });
-      });
-
-      enableTouchControl.addEventListener("change", () => {
-        orbityInstance.updateOptions({
-          enableTouch: enableTouchControl.checked,
-        });
+        downloadJson("orbity-tags.json", serializableTags());
+        setStatus("Tag data exported.");
       });
 
       undoButton.addEventListener("click", () => {
         orbityInstance.undo();
-        updateTagPreview();
+        setStatus("Last tag change undone.");
       });
 
       redoButton.addEventListener("click", () => {
         orbityInstance.redo();
-        updateTagPreview();
+        setStatus("Tag change redone.");
       });
 
-      importTagsButton.addEventListener("click", () => {
+      function serializableTags() {
+        return orbityInstance.getTags().map(({ index, ...tag }) => tag);
+      }
+
+      function downloadJson(filename, data) {
+        const url = URL.createObjectURL(
+          new Blob([JSON.stringify(data, null, 2)], {
+            type: "application/json",
+          })
+        );
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+
+      function chooseJsonFile(onLoad) {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "application/json";
-        input.addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const tags = JSON.parse(e.target.result);
-                if (
-                  Array.isArray(tags) &&
-                  tags.every((tag) => tag.text && tag.color)
-                ) {
-                  orbityInstance.setTags(tags);
-                  updateTagPreview();
-                } else {
-                  alert("Invalid tag format in JSON file.");
-                }
-              } catch (error) {
-                alert("Failed to parse JSON file.");
-              }
-            };
-            reader.readAsText(file);
+        input.accept = "application/json,.json";
+        input.addEventListener("change", async () => {
+          const [file] = input.files || [];
+          if (!file) return;
+          try {
+            onLoad(JSON.parse(await file.text()));
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : "Unknown file error.";
+            setStatus(`Could not load JSON: ${message}`, true);
           }
         });
         input.click();
+      }
+
+      function isValidTag(tag) {
+        return (
+          tag &&
+          typeof tag === "object" &&
+          ((typeof tag.text === "string" && tag.text.trim() !== "") ||
+            (typeof tag.imageUrl === "string" && tag.imageUrl !== "") ||
+            (typeof tag.svg === "string" && tag.svg !== "")) &&
+          (tag.color === undefined || typeof tag.color === "string")
+        );
+      }
+
+      function applySettingsToControls(settings) {
+        const bindings = {
+          radius: radiusControl,
+          speed: speedControl,
+          maxVelocity: maxVelocityControl,
+          shape: shapeControl,
+          majorRadius: majorRadiusControl,
+          minorRadius: minorRadiusControl,
+          enableTouch: enableTouchControl,
+          enableOrientation: enableOrientationControl,
+          autoSpin: autoSpinControl,
+          pauseOnHover: pauseOnHoverControl,
+          pauseOnFocus: pauseOnFocusControl,
+          respectReducedMotion: respectReducedMotionControl,
+          enableDrag: enableDragControl,
+          enableClick: enableClickControl,
+          hoverEffect: enableHoverEffectControl,
+          clickEffect: enableClickEffectControl,
+          hoverScale: hoverScaleControl,
+          hoverColor: hoverColorControl,
+          hoverOpacity: hoverOpacityControl,
+          customFont: fontFamilyControl,
+          customFontWeight: fontWeightControl,
+          fontSize: fontSizeControl,
+          easingProfile: easingProfileControl,
+          customEaseIn: customEaseInControl,
+          customFriction: customFrictionControl,
+          minVelocityThreshold: minVelocityThresholdControl,
+          autoEasing: autoEasingControl,
+        };
+        Object.entries(bindings).forEach(([key, control]) => {
+          if (settings[key] === undefined || settings[key] === null) return;
+          if (control.type === "checkbox") {
+            control.checked = Boolean(settings[key]);
+          } else {
+            control.value = String(settings[key]);
+          }
+        });
+        updateShapeControls();
+      }
+
+      copyCodeButton.addEventListener("click", async () => {
+        if (!codeOutput.textContent.trim()) {
+          setStatus("Generate configuration code before copying it.", true);
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(codeOutput.textContent);
+          setStatus("Configuration code copied.");
+        } catch (error) {
+          setStatus("Clipboard access is unavailable in this browser.", true);
+        }
+      });
+
+      importTagsButton.addEventListener("click", () => {
+        chooseJsonFile((tags) => {
+          if (!Array.isArray(tags) || !tags.every(isValidTag)) {
+            setStatus("The file must contain an array of valid tags.", true);
+            return;
+          }
+          orbityInstance.setTags(tags);
+          setStatus(`Imported ${tags.length} tag${tags.length === 1 ? "" : "s"}.`);
+        });
       });
 
       resetSettingsButton.addEventListener("click", () => {
-        radiusControl.value = 200;
-        speedControl.value = 0.02;
-        maxVelocityControl.value = 0.5;
-        shapeControl.value = "sphere";
-        enableTouchControl.checked = true;
-        enableOrientationControl.checked = false;
-        autoSpinControl.checked = true;
-        enableDragControl.checked = true;
-        enableClickControl.checked = true;
-        enableHoverEffectControl.checked = true;
-        enableClickEffectControl.checked = true;
-        hoverScaleControl.value = 1.2;
-        hoverColorControl.value = "#ffff00";
-        hoverOpacityControl.value = 1.0;
-        fontFamilyControl.value = "sans-serif";
-        fontWeightControl.value = "normal";
-        fontSizeControl.value = 15;
-        majorRadiusControl.value = 150;
-        minorRadiusControl.value = 50;
-
-        orbityInstance.updateOptions({
+        applySettingsToControls({
           radius: 200,
-          speed: 0.02,
+          speed: 1,
           maxVelocity: 0.5,
           shape: "sphere",
+          majorRadius: 150,
+          minorRadius: 50,
           enableTouch: true,
           enableOrientation: false,
           autoSpin: true,
+          pauseOnHover: false,
+          pauseOnFocus: true,
+          respectReducedMotion: true,
           enableDrag: true,
           enableClick: true,
           hoverEffect: true,
           clickEffect: true,
           hoverScale: 1.2,
           hoverColor: "#ffff00",
-          hoverOpacity: 1.0,
+          hoverOpacity: 1,
           customFont: "sans-serif",
           customFontWeight: "normal",
-          majorRadius: 150,
-          minorRadius: 50,
+          fontSize: 16,
+          easingProfile: "Smooth",
+          customEaseIn: 0.1,
+          customFriction: 0.95,
+          minVelocityThreshold: 0.0002,
+          autoEasing: true,
         });
-        orbityInstance.setTags([]);
-        updateTagPreview();
+        if (orbityInstance.settings.paused) orbityInstance.resume();
+        pauseResumeButton.textContent = "Pause cloud";
+        pauseResumeButton.setAttribute("aria-pressed", "false");
+        updateOrbityOptions();
+        setStatus("Settings restored. Your tags were kept.");
       });
 
       tagPreview.addEventListener("click", (event) => {
-        const target = event.target;
-        if (target.tagName === "SPAN") {
-          const index = Array.from(tagPreview.children).indexOf(target);
-          const tag = orbityInstance.tags[index];
-          if (tag) {
-            const newText = prompt("Edit tag text:", tag.text);
-            if (newText === null) return;
-            if (newText.trim() === "") {
-              orbityInstance.removeTag(index);
-            } else {
-              orbityInstance.updateTag(index, { text: newText.trim() });
-            }
-            updateTagPreview();
-          }
+        const target =
+          event.target instanceof Element
+            ? event.target.closest("button[data-index]")
+            : null;
+        if (!target) return;
+        const index = Number(target.dataset.index);
+        const tag = orbityInstance.getTags()[index];
+        if (!tag || typeof tag.text !== "string") return;
+        const newText = prompt("Edit tag text:", tag.text);
+        if (newText === null) return;
+        if (newText.trim() === "") {
+          orbityInstance.removeTag(index);
+        } else {
+          orbityInstance.updateTag(index, { text: newText.trim() });
         }
       });
 
       saveConfigButton.addEventListener("click", () => {
-        const config = {
-          settings: {
-            radius: parseInt(radiusControl.value),
-            speed: parseFloat(speedControl.value),
-            maxVelocity: parseFloat(maxVelocityControl.value),
-            shape: shapeControl.value,
-            enableTouch: enableTouchControl.checked,
-            enableOrientation: enableOrientationControl.checked,
-            autoSpin: autoSpinControl.checked,
-            enableDrag: enableDragControl.checked,
-            enableClick: enableClickControl.checked,
-            hoverEffect: enableHoverEffectControl.checked,
-            clickEffect: enableClickEffectControl.checked,
-            hoverScale: parseFloat(hoverScaleControl.value),
-            hoverColor: hoverColorControl.value,
-            hoverOpacity: parseFloat(hoverOpacityControl.value),
-            customFont: fontFamilyControl.value,
-            customFontWeight: fontWeightControl.value,
-            majorRadius: parseInt(majorRadiusControl.value),
-            minorRadius: parseInt(minorRadiusControl.value),
-          },
-          tags: orbityInstance.tags.map(({ text, color, fontSize }) => ({
-            text,
-            color,
-            fontSize,
-          })),
-        };
-
-        const blob = new Blob([JSON.stringify(config, null, 2)], {
-          type: "application/json",
+        downloadJson("orbity-config.json", {
+          settings: collectOptions(),
+          tags: serializableTags(),
         });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "orbity-config.json";
-        a.click();
-        URL.revokeObjectURL(url);
+        setStatus("Configuration saved.");
       });
 
       loadConfigButton.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "application/json";
-        input.addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              try {
-                const config = JSON.parse(e.target.result);
-                if (
-                  config.settings &&
-                  typeof config.settings === "object" &&
-                  Array.isArray(config.tags)
-                ) {
-                  const settings = config.settings;
-                  radiusControl.value = settings.radius || 200;
-                  speedControl.value = settings.speed || 0.02;
-                  maxVelocityControl.value = settings.maxVelocity || 0.5;
-                  shapeControl.value = settings.shape || "sphere";
-                  enableTouchControl.checked = settings.enableTouch || false;
-                  enableOrientationControl.checked =
-                    settings.enableOrientation || false;
-                  autoSpinControl.checked = settings.autoSpin || false;
-                  enableDragControl.checked = settings.enableDrag || false;
-                  enableClickControl.checked = settings.enableClick || false;
-                  enableHoverEffectControl.checked =
-                    settings.hoverEffect || false;
-                  enableClickEffectControl.checked =
-                    settings.clickEffect || false;
-                  hoverScaleControl.value = settings.hoverScale || 1.2;
-                  hoverColorControl.value = settings.hoverColor || "#ffff00";
-                  hoverOpacityControl.value = settings.hoverOpacity || 1.0;
-                  fontFamilyControl.value = settings.customFont || "sans-serif";
-                  fontWeightControl.value =
-                    settings.customFontWeight || "normal";
-                  majorRadiusControl.value = settings.majorRadius || 150;
-                  minorRadiusControl.value = settings.minorRadius || 50;
-
-                  orbityInstance.updateOptions(settings);
-
-                  orbityInstance.setTags(config.tags);
-                  updateTagPreview();
-                } else {
-                  alert("Invalid configuration file.");
-                }
-              } catch (error) {
-                alert("Failed to parse configuration file.");
-              }
-            };
-            reader.readAsText(file);
+        chooseJsonFile((config) => {
+          if (
+            !config ||
+            typeof config !== "object" ||
+            !config.settings ||
+            typeof config.settings !== "object" ||
+            !Array.isArray(config.tags) ||
+            !config.tags.every(isValidTag)
+          ) {
+            setStatus("The file is not a valid Orbity configuration.", true);
+            return;
           }
+          applySettingsToControls(config.settings);
+          updateOrbityOptions();
+          orbityInstance.setTags(config.tags);
+          setStatus("Configuration loaded.");
         });
-        input.click();
+      });
+
+      tagTextInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") addTagButton.click();
+      });
+
+      window.addEventListener("pagehide", () => orbityInstance.destroy(), {
+        once: true,
       });
     </script>
   </body>

@@ -5,34 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Orbity.js Documentation</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <header>
-      <div class="container">
+  <body class="documentation-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="container header-content">
         <img
-        src="orbity.svg"
-        alt="Orbity.js Logo"
-        style="height: 40px; margin-right: 10px"
-      />
-        <h1>Orbity.js Documentation</h1>
-        <p>Your guide to creating interactive 3D tag clouds</p>
+          src="orbity.svg"
+          alt=""
+          width="48"
+          height="48"
+          class="brand-logo"
+        />
+        <div class="header-title">
+          <span class="eyebrow">Orbity.js</span>
+          <h1>Documentation</h1>
+          <p>Build interactive, accessible 3D tag clouds.</p>
+        </div>
+        <span class="version-badge">v1.1.1</span>
+        <a class="header-link" href="playground.html">Open Playground <span aria-hidden="true">↗</span></a>
       </div>
     </header>
-    <nav>
+    <nav aria-label="Main navigation">
       <div class="container">
-        <button class="burger-menu" aria-label="Toggle navigation">
+        <button class="burger-menu" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
           <div class="burger-lines">
             <span></span>
             <span></span>
             <span></span>
           </div>
         </button>
-        <ul class="collapsed">
+        <ul id="primary-navigation" class="collapsed">
           <li><a href="#introduction">Introduction</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#getting-started">Getting Started</a></li>
@@ -42,11 +52,11 @@
           <li><a href="#dynamic-tags">Managing Tags Dynamically</a></li>
           <li><a href="#event-listeners">Utilizing Event Listeners</a></li>
           <li><a href="#license">License</a></li>
-          <li><a href="playground.html" target="_blank">Playground</a></li>
+          <li><a href="playground.html">Playground</a></li>
         </ul>
       </div>
     </nav>
-    <main>
+    <main id="main-content">
       <div class="container">
         <h2 id="introduction">Introduction</h2>
         <p>
@@ -55,7 +65,7 @@
           various shapes, touch interactions, and device orientation, making it
           ideal for visually engaging web applications.
         </p>
-        <a href="playground.html" target="_blank" class="btn"
+        <a href="playground.html" class="btn"
           >Try the Playground</a
         >
 
@@ -78,7 +88,7 @@
 
         <h2 id="getting-started">Getting Started</h2>
         <p>To use Orbity.js, include the library in your project:</p>
-        <pre><code>&lt;script src="orbity.js"&gt;&lt;/script&gt;</code></pre>
+        <pre><code>&lt;script src="./dist/orbity.min.js"&gt;&lt;/script&gt;</code></pre>
         <p>
           Next, add a canvas element to your HTML where the tag cloud will be
           rendered:
@@ -179,7 +189,7 @@ orbityInstance.addTag({ text: "Django", color: "#092e20" });
         <p>To update the configuration of the tag cloud:</p>
         <pre><code>
 orbityInstance.updateOptions({
-  speed: 0.005,
+  speed: 0.5,
   shape: "plane",
 });
         </code></pre>
@@ -238,7 +248,7 @@ const orbityInstance = new Orbity(canvas, {
                 The rotation speed of the tag cloud. Higher values result in
                 faster rotation.
               </td>
-              <td><code>0.002</code></td>
+              <td><code>1</code></td>
             </tr>
             <tr>
               <td><code>shape</code></td>
@@ -257,7 +267,7 @@ const orbityInstance = new Orbity(canvas, {
                 The maximum rotation velocity of the tag cloud. This limits how
                 fast the cloud can spin.
               </td>
-              <td><code>0.01</code></td>
+              <td><code>0.08</code></td>
             </tr>
             <tr>
               <td><code>enableTouch</code></td>
@@ -266,7 +276,7 @@ const orbityInstance = new Orbity(canvas, {
                 Enables touch interactions for rotating the tag cloud on touch
                 devices.
               </td>
-              <td><code>false</code></td>
+              <td><code>true</code></td>
             </tr>
             <tr>
               <td><code>enableOrientation</code></td>
@@ -279,14 +289,13 @@ const orbityInstance = new Orbity(canvas, {
             </tr>
             <tr>
               <td><code>easing</code></td>
-              <td>String</td>
+              <td>Number</td>
               <td>
-                The easing function for the rotation animation. Supported values
-                include
-                <code>"linear"</code>, <code>"ease-in"</code>,
-                <code>"ease-out"</code>, etc.
+                Controls how tightly rotation follows pointer input. Valid
+                values are clamped between <code>0.01</code> and
+                <code>0.5</code>.
               </td>
-              <td><code>"linear"</code></td>
+              <td><code>0.1</code></td>
             </tr>
             <tr>
               <td><code>autoSpin</code></td>
@@ -330,7 +339,7 @@ const orbityInstance = new Orbity(canvas, {
                 Enables hover effects for tags, such as scaling, color changes,
                 and opacity adjustments.
               </td>
-              <td><code>false</code></td>
+              <td><code>true</code></td>
             </tr>
             <tr>
               <td><code>clickEffect</code></td>
@@ -339,19 +348,19 @@ const orbityInstance = new Orbity(canvas, {
                 Enables click effects for tags, such as scaling, color changes,
                 and opacity adjustments.
               </td>
-              <td><code>false</code></td>
+              <td><code>true</code></td>
             </tr>
             <tr>
               <td><code>hoverScale</code></td>
               <td>Number</td>
               <td>The scale factor applied to tags when hovered over.</td>
-              <td><code>1.0</code></td>
+              <td><code>1.2</code></td>
             </tr>
             <tr>
               <td><code>hoverColor</code></td>
               <td>String</td>
               <td>The color applied to tags when hovered over.</td>
-              <td><code>null</code></td>
+              <td><code>"#ff0"</code></td>
             </tr>
             <tr>
               <td><code>hoverOpacity</code></td>
@@ -378,13 +387,13 @@ const orbityInstance = new Orbity(canvas, {
                 The major radius of the torus (distance from the center of the
                 torus to the center of the tube).
               </td>
-              <td><code>150</code></td>
+              <td><code>radius * 0.7</code></td>
             </tr>
             <tr>
               <td><code>minorRadius</code></td>
               <td>Number</td>
               <td>The minor radius of the torus (radius of the tube).</td>
-              <td><code>50</code></td>
+              <td><code>radius * 0.3</code></td>
             </tr>
           </tbody>
         </table>
@@ -552,7 +561,7 @@ const orbityInstance = new Orbity(canvas, {
         <pre><code>
 const orbityInstance = new Orbity(canvas, {
   radius: 200, // Set the size of the tag cloud
-  speed: 0.01, // Adjust rotation speed
+  speed: 1, // Adjust rotation speed
   shape: "cylinder", // Use a cylinder shape
   autoSpin: true, // Enable automatic spinning
 });
@@ -650,12 +659,37 @@ orbityInstance.off("tagClick", onClick);
           <div class="editor-container">
             <textarea
               id="code-editor"
-              placeholder="Write your code here..."
-            ></textarea>
-            <button id="run-code" class="btn">Run Code</button>
+              aria-label="Orbity JavaScript example"
+              spellcheck="false"
+            >window.orbityLiveDemo?.destroy();
+const canvas = document.getElementById("orbityCanvas");
+window.orbityLiveDemo = new Orbity(canvas, {
+  radius: 150,
+  speed: 1,
+  shape: "sphere",
+});
+window.orbityLiveDemo.setTags([
+  { text: "Orbity", color: "#ffc845" },
+  { text: "JavaScript", color: "#f7df1e" },
+  { text: "Canvas", color: "#61dafb" },
+  { text: "Interactive", color: "#a78bfa" },
+]);</textarea>
+            <div class="editor-actions">
+              <button id="run-code" class="btn" type="button">Run example</button>
+              <button id="reset-code" class="button-secondary" type="button">Reset example</button>
+            </div>
+            <p id="editor-status" class="status-message" role="status" aria-live="polite">
+              The example is ready to run.
+            </p>
           </div>
-          <canvas id="orbityCanvas" width="800" height="600"></canvas>
-          <a href="playground.html" target="_blank" class="btn"
+          <canvas
+            id="orbityCanvas"
+            class="orbity-canvas"
+            width="800"
+            height="600"
+            aria-label="Live Orbity tag cloud example"
+          ></canvas>
+          <a href="playground.html" class="btn"
             >Go to Playground</a
           >
         </section>
@@ -671,70 +705,62 @@ orbityInstance.off("tagClick", onClick);
     </main>
     <footer>
       <div class="container">
-        <p>© 2025 Orbity.js. All rights reserved. Made by Ignithia</p>
+        <p>© 2026 Orbity.js. Crafted by Ignithia.</p>
         <ul>
+          <li><a href="https://github.com/Ignithia">GitHub</a></li>
           <li>
-            <a href="https://github.com/Ignithia" target="_blank">GitHub</a>
+            <a href="https://ignithia.be/">Ignithia's Portfolio</a>
           </li>
-          <li>
-            <a href="https://ignithia.be/" target="_blank"
-              >Ignithia's Portfolio</a
-            >
-          </li>
-          <li>
-            <a href="playground.html" target="_blank">Playground</a>
-          </li>
+          <li><a href="playground.html">Playground</a></li>
         </ul>
       </div>
     </footer>
     <script src="./dist/orbity.min.js"></script>
     <script>
       document.getElementById("run-code").addEventListener("click", () => {
-        const code = document.getElementById("code-editor").value;
-        eval(code);
+        const editor = document.getElementById("code-editor");
+        const status = document.getElementById("editor-status");
+        try {
+          window.orbityLiveDemo?.destroy();
+          window.orbityLiveDemo = null;
+          new Function("Orbity", "document", "window", editor.value)(
+            window.Orbity,
+            document,
+            window
+          );
+          status.textContent = "Example ran successfully.";
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : "Unknown JavaScript error.";
+          status.textContent = `Could not run example: ${message}`;
+        }
+      });
+
+      const exampleEditor = document.getElementById("code-editor");
+      const defaultExample = exampleEditor.value;
+      document.getElementById("reset-code").addEventListener("click", () => {
+        exampleEditor.value = defaultExample;
+        document.getElementById("editor-status").textContent =
+          "Example reset. Run it to see the preview.";
       });
 
       const burgerMenu = document.querySelector(".burger-menu");
       const navMenu = document.querySelector("nav ul");
 
       burgerMenu.addEventListener("click", () => {
-        burgerMenu.classList.toggle("expanded");
-        navMenu.classList.toggle("expanded");
-        navMenu.classList.toggle("collapsed");
+        const expanded =
+          burgerMenu.getAttribute("aria-expanded") === "true";
+        burgerMenu.setAttribute("aria-expanded", String(!expanded));
+        burgerMenu.classList.toggle("expanded", !expanded);
+        navMenu.classList.toggle("expanded", !expanded);
+        navMenu.classList.toggle("collapsed", expanded);
       });
 
-      // Active state based on scroll position
-      const sections = document.querySelectorAll(
-        "main section[id], main h2[id], main h3[id]"
-      );
       const navLinks = document.querySelectorAll("nav ul li a");
-
-      function updateActiveLink() {
-        let current = "";
-
-        sections.forEach((section) => {
-          const sectionTop = section.offsetTop;
-          const sectionHeight = section.clientHeight;
-          if (window.scrollY >= sectionTop - 200) {
-            current = section.getAttribute("id");
-          }
-        });
-
-        navLinks.forEach((link) => {
-          link.classList.remove("active");
-          if (link.getAttribute("href") === `#${current}`) {
-            link.classList.add("active");
-          }
-        });
-      }
-
-      window.addEventListener("scroll", updateActiveLink);
-      window.addEventListener("load", updateActiveLink);
-
-      // Close mobile menu when clicking a link
       navLinks.forEach((link) => {
         link.addEventListener("click", () => {
           if (window.innerWidth <= 768) {
+            burgerMenu.setAttribute("aria-expanded", "false");
             burgerMenu.classList.remove("expanded");
             navMenu.classList.remove("expanded");
             navMenu.classList.add("collapsed");
@@ -742,26 +768,34 @@ orbityInstance.off("tagClick", onClick);
         });
       });
 
-      const header = document.querySelector("header");
-      const nav = document.querySelector("nav");
-      const navContainer = document.querySelector("nav .container");
+      if ("IntersectionObserver" in window) {
+        const sectionObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting || !entry.target.id) return;
+              navLinks.forEach((link) => {
+                link.classList.toggle(
+                  "active",
+                  link.getAttribute("href") === `#${entry.target.id}`
+                );
+              });
+            });
+          },
+          { rootMargin: "-15% 0px -75% 0px" }
+        );
+        navLinks.forEach((link) => {
+          const href = link.getAttribute("href");
+          if (!href || !href.startsWith("#")) return;
+          const section = document.getElementById(href.slice(1));
+          if (section) sectionObserver.observe(section);
+        });
+      }
 
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) {
-            nav.classList.add("sticky");
-            nav.style.padding = "0";
-            navContainer.style.paddingTop = "10px";
-          } else {
-            nav.classList.remove("sticky");
-            nav.style.padding = "";
-            navContainer.style.paddingTop = "";
-          }
-        },
-        { rootMargin: "-125px 0px 0px 0px" } // Adjust based on header height
+      window.addEventListener(
+        "pagehide",
+        () => window.orbityLiveDemo?.destroy(),
+        { once: true }
       );
-
-      observer.observe(header);
     </script>
   </body>
 </html>
