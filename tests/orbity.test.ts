@@ -3,11 +3,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import Orbity from '../src/orbity';
 
-function pointerEvent(type: string, x: number, y: number): MouseEvent {
+function pointerEvent(type: string, x: number, y: number, pointerType = 'mouse'): MouseEvent {
   const event = new MouseEvent(type, { clientX: x, clientY: y, bubbles: true, cancelable: true });
   Object.defineProperties(event, {
     pointerId: { value: 1 },
-    pointerType: { value: 'mouse' },
+    pointerType: { value: pointerType },
   });
   return event;
 }
@@ -76,14 +76,43 @@ describe('Orbity Core Features', () => {
   });
 
   it.each([
-    { deltaX: 20, direction: 1 },
-    { deltaX: -20, direction: -1 },
-  ])('should rotate in the direction of a horizontal drag', ({ deltaX, direction }) => {
+    { pointerType: 'mouse', deltaX: 20, deltaY: 0, axis: 'y', direction: -1 },
+    { pointerType: 'mouse', deltaX: -20, deltaY: 0, axis: 'y', direction: 1 },
+    { pointerType: 'mouse', deltaX: 0, deltaY: 20, axis: 'x', direction: 1 },
+    { pointerType: 'mouse', deltaX: 0, deltaY: -20, axis: 'x', direction: -1 },
+    { pointerType: 'touch', deltaX: 20, deltaY: 0, axis: 'y', direction: -1 },
+    { pointerType: 'touch', deltaX: -20, deltaY: 0, axis: 'y', direction: 1 },
+    { pointerType: 'touch', deltaX: 0, deltaY: 20, axis: 'x', direction: 1 },
+    { pointerType: 'touch', deltaX: 0, deltaY: -20, axis: 'x', direction: -1 },
+  ])('should rotate with a $pointerType drag in the pointer direction', ({ pointerType, deltaX, deltaY, axis, direction }) => {
+    canvas.dispatchEvent(pointerEvent('pointerdown', 100, 100, pointerType));
+    canvas.dispatchEvent(pointerEvent('pointermove', 100 + deltaX, 100 + deltaY, pointerType));
+
+    const target = orbity._target;
+    if (!target) throw new Error('Drag did not create a rotation target.');
+    expect(target[axis as 'x' | 'y'] * direction).toBeGreaterThan(0);
+  });
+
+  it('should reverse drag direction when invertDrag is enabled', () => {
+    orbity.updateOptions({ invertDrag: true });
     canvas.dispatchEvent(pointerEvent('pointerdown', 100, 100));
-    canvas.dispatchEvent(pointerEvent('pointermove', 100 + deltaX, 100));
+    canvas.dispatchEvent(pointerEvent('pointermove', 120, 100));
 
     const target = orbity._target;
     if (!target) throw new Error('Horizontal drag did not create a rotation target.');
-    expect(target.y * direction).toBeGreaterThan(0);
+    expect(target.y).toBeGreaterThan(0);
+  });
+
+  it('should finish easing to the drag target before handing off inertia', () => {
+    canvas.dispatchEvent(pointerEvent('pointerdown', 100, 100));
+    canvas.dispatchEvent(pointerEvent('pointermove', 120, 100));
+    canvas.dispatchEvent(pointerEvent('pointerup', 120, 100));
+
+    const handoff = orbity._handoff;
+    expect(handoff).not.toBeNull();
+    expect(orbity._target).not.toBeNull();
+    for (let i = 0; i < 100 && orbity._target; i++) orbity._step(1);
+    expect(orbity._target).toBeNull();
+    expect(orbity.velocity).toEqual(handoff);
   });
 });

@@ -58,6 +58,7 @@ const MIN_HIT_TOUCH = 44;
 const KEY_ROTATE_STEP = 0.15;
 const MAX_HISTORY = 100;
 const GRID_CELL = 64;
+const RELOCATE_PX = 18; // a label that must move further than this in one frame cross-fades instead
 
 const SR_ONLY =
   "position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;" +
@@ -113,6 +114,7 @@ const OPTION_SPECS = {
   pauseOnFocus: bool(true),
   respectReducedMotion: bool(true),
   touchAction: str("none"),
+  invertDrag: bool(false),
   // appearance
   hoverEffect: bool(true),
   clickEffect: bool(true),
@@ -201,6 +203,7 @@ class Orbity {
    * @param {boolean} [options.pauseOnHover=true] - Auto-spin stops while a tag is hovered.
    * @param {boolean} [options.pauseOnFocus=true] - Auto-spin stops while a tag has keyboard focus.
    * @param {boolean} [options.respectReducedMotion=true] - Honour prefers-reduced-motion.
+   * @param {boolean} [options.invertDrag=false] - Reverse the drag direction (default: the near side of the cloud follows the pointer).
    * @param {string} [options.touchAction="none"] - CSS touch-action for the canvas. Use "pan-y" to keep vertical page scroll.
    *
    * Appearance
@@ -222,10 +225,11 @@ class Orbity {
    * @param {string} [options.focusColor="#ffc845"]
    *
    * Layout
-   * @param {"nudge"|"hide"|"none"} [options.overlapStrategy="nudge"] - nudge: move colliding labels
-   *   aside, then hide them if there is no room. hide: skip nudging. none: allow overlap.
+   * @param {"nudge"|"hide"|"none"} [options.overlapStrategy="nudge"] - nudge: a label that would collide is pushed
+   *   just far enough aside to clear its neighbour (smoothly, never hopping), and fades out only if it cannot
+   *   fit within `nudgeSteps`. hide: the nearer label wins and the one behind it fades out. none: allow overlap.
    * @param {number} [options.labelGap=6] - Minimum space between labels (px).
-   * @param {number} [options.nudgeSteps=3] - How far (in label sizes) a label may be moved.
+   * @param {number} [options.nudgeSteps=3] - How far (in label sizes) a label may be pushed from its natural spot before it fades out instead.
    * @param {number} [options.edgePadding=8] - Labels stay this far inside the canvas edge.
    *
    * Accessibility
@@ -276,6 +280,7 @@ class Orbity {
     this._target = null;
     this._targetRate = 1;
     this._dragging = false;
+    this._handoff = null;
     this._drag = null;
     this._measured = { x: 0, y: 0 };
     this._pointer = null;
@@ -688,6 +693,7 @@ class Orbity {
       _hover: 0,
       _pulse: 0,
       _vis: 0,
+      _placed: false,
       _off: { x: 0, y: 0 },
       _offT: { x: 0, y: 0 },
     };
@@ -1138,6 +1144,11 @@ class Orbity {
         rot.x = this._target.x;
         rot.y = this._target.y;
         this._target = null;
+        if (this._handoff) {
+          this.velocity.x = this._handoff.x;
+          this.velocity.y = this._handoff.y;
+          this._handoff = null;
+        }
       } else {
         needsFrames = true;
       }
@@ -1282,15 +1293,21 @@ class Orbity {
       tag.z = z2;
 
       const persp = f / (f + z2);
-      const scale =
-        1 + (s.hoverEffect ? (s.hoverScale - 1) * tag._hover : 0) + (s.clickEffect ? 0.12 * tag._pulse : 0);
-      const item = this._measureItem(tag, persp, scale, fontKey);
+      // Layout always uses the resting size. If hover or click changed the size the layout would
+      // re-solve on every interaction and neighbouring labels would jump around.
+      const item = this._measureItem(tag, persp, 1, fontKey);
       if (!item) continue;
+      const wantGrow =
+        1 + (s.hoverEffect ? (s.hoverScale - 1) * tag._hover : 0) + (s.clickEffect ? 0.12 * tag._pulse : 0);
+      // Never let the enlarged label be wider / taller than the canvas can show.
+      item.grow = Math.max(
+        1,
+        Math.min(wantGrow, (w - 2 * s.edgePadding) / item.w, (h - 2 * s.edgePadding) / item.h)
+      );
       item.px = cx + x1 * persp * fit;
       item.py = cy + y2 * persp * fit;
       item.z = z2;
       item.depth = clamp((z2 + extent) / (2 * extent), 0, 1);
-      item.pri = tag === this._focusedTag ? 0 : tag === this._hoveredTag ? 1 : 2;
       items.push(item);
     }
 
@@ -1330,78 +1347,138 @@ class Orbity {
         else grid.set(key, [b]);
         return false;
       });
-    const place = (it, dx, dy) => {
+    const clampTo = (it, x, y) => {
       const minX = pad + it.w / 2;
       const maxX = w - pad - it.w / 2;
       const minY = pad + it.h / 2;
       const maxY = h - pad - it.h / 2;
-      const x = minX > maxX ? cx : clamp(it.px + dx, minX, maxX);
-      const y = minY > maxY ? cy : clamp(it.py + dy, minY, maxY);
-      return { x, y };
+      return {
+        x: minX > maxX ? cx : clamp(x, minX, maxX),
+        y: minY > maxY ? cy : clamp(y, minY, maxY),
+      };
     };
 
-    const order = items.slice().sort((a, b) => a.pri - b.pri || a.z - b.z);
-    for (const it of order) {
-      let chosen = null;
-      // A hovered / focused label keeps the spot it already has. Otherwise promoting it to
-      // first priority would snap it back to its natural position, out from under the cursor.
-      const prevOff = it.tag._offT;
-      const sticky = it.pri < 2 && strategy !== "none" && (prevOff.x || prevOff.y);
-      let pos = place(it, sticky ? prevOff.x : 0, sticky ? prevOff.y : 0);
-      let box = boxOf(pos.x, pos.y, it.w, it.h);
-      if (strategy === "none" || !collides(box)) {
-        chosen = sticky ? { dx: prevOff.x, dy: prevOff.y, box } : { dx: 0, dy: 0, box };
-      } else if (strategy === "nudge" && s.nudgeSteps > 0) {
-        const stepY = it.h + s.labelGap;
-        const stepX = it.w * 0.5 + s.labelGap;
-        const cands = [];
-        for (let k = 1; k <= s.nudgeSteps; k++) {
-          cands.push([0, k * stepY], [0, -k * stepY], [k * stepX, 0], [-k * stepX, 0]);
-          cands.push([k * stepX, k * stepY], [-k * stepX, k * stepY], [k * stepX, -k * stepY], [-k * stepX, -k * stepY]);
-        }
-        cands.sort((a, b) => Math.hypot(a[0], a[1]) - Math.hypot(b[0], b[1]));
-        const prev = it.tag._offT;
-        if (prev.x || prev.y) cands.unshift([prev.x, prev.y]);
-        for (const [dx, dy] of cands) {
-          pos = place(it, dx, dy);
-          box = boxOf(pos.x, pos.y, it.w, it.h);
-          if (!collides(box)) {
-            chosen = { dx, dy, box };
-            break;
+    const firstHit = (b) => {
+      let hit = null;
+      forCells(b, (key) => {
+        const list = grid.get(key);
+        if (!list) return false;
+        for (const o of list) {
+          if (b.l < o.r && b.r > o.l && b.t < o.b && b.b > o.t) {
+            hit = o;
+            return true;
           }
         }
+        return false;
+      });
+      return hit;
+    };
+
+    // Nearest first, but a label that is already showing gets a head start (hysteresis) so two
+    // labels of similar depth don't swap places back and forth as the cloud turns.
+    const rank = (it) => it.z - (it.tag._placed ? extent * 0.45 : 0);
+    const order = items.slice().sort((a, b) => rank(a) - rank(b));
+    const relax = Math.pow(0.85, dt);
+    for (const it of order) {
+      const tag = it.tag;
+      const base = clampTo(it, it.px, it.py);
+      const at = (ox, oy) => clampTo(it, base.x + ox, base.y + oy);
+      let ox = 0;
+      let oy = 0;
+      let box = boxOf(base.x, base.y, it.w, it.h);
+      let placed = true;
+
+      if (strategy === "hide") {
+        placed = !collides(box);
+      } else if (strategy === "nudge") {
+        ox = tag._offT.x;
+        oy = tag._offT.y;
+        if (ox || oy) {
+          for (const [fx, fy] of [[relax, relax], [relax, 1], [1, relax]]) {
+            let rx = ox * fx;
+            let ry = oy * fy;
+            if (Math.abs(rx) < 0.5) rx = 0;
+            if (Math.abs(ry) < 0.5) ry = 0;
+            if (rx === ox && ry === oy) continue;
+            const q = at(rx, ry);
+            if (!collides(boxOf(q.x, q.y, it.w, it.h))) {
+              ox = rx;
+              oy = ry;
+              break;
+            }
+          }
+        }
+        let p = at(ox, oy);
+        box = boxOf(p.x, p.y, it.w, it.h);
+        let hit = firstHit(box);
+        const maxX = s.nudgeSteps * (it.w * 0.5 + s.labelGap);
+        const maxY = s.nudgeSteps * (it.h + s.labelGap);
+        for (let n = 0; hit && n < 10; n++) {
+          const penX = Math.min(box.r, hit.r) - Math.max(box.l, hit.l);
+          const penY = Math.min(box.b, hit.b) - Math.max(box.t, hit.t);
+          const sx = box.l + box.r >= hit.l + hit.r ? 1 : -1;
+          const sy = box.t + box.b >= hit.t + hit.b ? 1 : -1;
+          const mx = [sx * (penX + 0.5), 0];
+          const my = [0, sy * (penY + 0.5)];
+          const mxo = [-mx[0], 0];
+          const myo = [0, -my[1]];
+          const moves = penX <= penY ? [mx, my, mxo, myo] : [my, mx, myo, mxo];
+          let moved = false;
+          for (const [dx, dy] of moves) {
+            const q = at(ox + dx, oy + dy);
+            const ex = q.x - base.x;
+            const ey = q.y - base.y;
+            if (Math.abs(ex) > maxX || Math.abs(ey) > maxY) continue;
+            if (Math.abs(q.x - p.x) + Math.abs(q.y - p.y) < 0.25) continue;
+            ox = ex;
+            oy = ey;
+            p = q;
+            moved = true;
+            break;
+          }
+          if (!moved) break;
+          box = boxOf(p.x, p.y, it.w, it.h);
+          hit = firstHit(box);
+        }
+        if (hit) placed = false;
       }
-      it.placed = !!chosen;
-      if (chosen) {
-        insert(chosen.box);
-        it.tag._offT = { x: chosen.dx, y: chosen.dy };
+
+      it.placed = placed;
+      tag._placed = placed;
+      if (placed) {
+        insert(box);
+        tag._offT = { x: ox, y: oy };
+      } else {
+        tag._offT = { x: 0, y: 0 };
       }
     }
 
     // 3. smooth offsets / visibility, then draw far -> near
-    // Offsets snap (never glide): two labels gliding toward collision-free spots can cross
-    // each other mid-way, which is exactly the overlap this layout pass exists to prevent.
+    // Offsets are applied directly (never glided): the solver's offsets already change
+    // continuously, and two labels gliding towards free spots could cross each other mid-way.
     const moveStep = 1;
     const fadeStep = reduced ? 1 : smoothFactor(0.5, dt);
     for (const it of items) {
       const tag = it.tag;
-      const target = it.placed ? 1 : 0;
+      let target = it.placed ? 1 : 0;
+      if (it.placed) {
+        const gap = Math.abs(tag._offT.x - tag._off.x) + Math.abs(tag._offT.y - tag._off.y);
+        if (gap > RELOCATE_PX && tag._vis > 0.04 && !reduced) {
+          target = 0;
+        } else {
+          tag._off.x += (tag._offT.x - tag._off.x) * moveStep;
+          tag._off.y += (tag._offT.y - tag._off.y) * moveStep;
+        }
+      }
       tag._vis += (target - tag._vis) * fadeStep;
       if (Math.abs(target - tag._vis) < 0.02) tag._vis = target;
       else animating = true;
-      if (it.placed) {
-        tag._off.x += (tag._offT.x - tag._off.x) * moveStep;
-        tag._off.y += (tag._offT.y - tag._off.y) * moveStep;
-        if (Math.abs(tag._offT.x - tag._off.x) + Math.abs(tag._offT.y - tag._off.y) < 0.3) {
-          tag._off.x = tag._offT.x;
-          tag._off.y = tag._offT.y;
-        } else {
-          animating = true;
-        }
-      }
     }
 
-    const drawList = items.filter((it) => it.tag._vis > 0.02).sort((a, b) => b.z - a.z);
+    const onTop = (it) => (it.tag === this._focusedTag ? 2 : it.tag === this._hoveredTag ? 1 : 0);
+    const drawList = items
+      .filter((it) => it.tag._vis > 0.02)
+      .sort((a, b) => onTop(a) - onTop(b) || b.z - a.z);
     const hits = [];
     const hoverOpacity = s.hoverEffect ? s.hoverOpacity : 1;
     ctx.textAlign = "center";
@@ -1410,31 +1487,39 @@ class Orbity {
 
     for (const it of drawList) {
       const tag = it.tag;
-      const pos = place(it, tag._off.x, tag._off.y);
-      it.cx = pos.x;
-      it.cy = pos.y;
+      const base = clampTo(it, it.px, it.py);
+      const pos = clampTo(it, base.x + tag._off.x, base.y + tag._off.y);
+
+      const dw = it.w * it.grow;
+      const dh = it.h * it.grow;
+      const dfs = (it.fs || 0) * it.grow;
+      const inset = Math.max(pad, tag === this._focusedTag ? 8 : 0);
+      const px = dw / 2 + inset > w / 2 ? cx : clamp(pos.x, inset + dw / 2, w - inset - dw / 2);
+      const py = dh / 2 + inset > h / 2 ? cy : clamp(pos.y, inset + dh / 2, h - inset - dh / 2);
+      it.cx = px;
+      it.cy = py;
 
       const depthAlpha = s.depthFade ? 1 - (1 - s.minOpacity) * it.depth : 1;
       const alpha = (depthAlpha + (hoverOpacity - depthAlpha) * tag._hover) * tag._vis;
       ctx.globalAlpha = clamp(alpha, 0, 1);
 
       if (it.kind === "image") {
-        ctx.drawImage(it.img, pos.x - it.w / 2, pos.y - it.h / 2, it.w, it.h);
+        ctx.drawImage(it.img, px - dw / 2, py - dh / 2, dw, dh);
       } else {
         const color = s.hoverEffect && tag._hover > 0.5 ? s.hoverColor : tag.data.color;
-        ctx.font = `${s.customFontWeight} ${it.fs}px ${s.customFont}`;
+        ctx.font = `${s.customFontWeight} ${dfs}px ${s.customFont}`;
         if (s.labelOutline) {
-          ctx.lineWidth = Math.max(2, it.fs * 0.2);
+          ctx.lineWidth = Math.max(2, dfs * 0.2);
           ctx.strokeStyle = s.outlineColor;
-          ctx.strokeText(tag.data.text, pos.x, pos.y);
+          ctx.strokeText(tag.data.text, px, py);
         }
         ctx.fillStyle = color;
-        ctx.fillText(tag.data.text, pos.x, pos.y);
+        ctx.fillText(tag.data.text, px, py);
       }
 
       if (tag === this._focusedTag) {
         ctx.globalAlpha = tag._vis;
-        this._drawFocusRing(pos.x, pos.y, it.w, it.h);
+        this._drawFocusRing(px, py, dw, dh);
       }
       if (tag._vis > 0.5) hits.push(it);
     }
@@ -1553,6 +1638,7 @@ class Orbity {
         d.active = true;
         this._dragging = true;
         this._target = null;
+        this._handoff = null;
         this._measured = { x: 0, y: 0 };
         this.velocity.x = this.velocity.y = 0;
         // Apply everything travelled so far, so no motion is lost to the tolerance.
@@ -1563,7 +1649,8 @@ class Orbity {
       if (d.active) {
         const dx = pt.x - d.lastX;
         const dy = pt.y - d.lastY;
-        this._nudgeTarget(this._pixelsToAngle(dy), this._pixelsToAngle(dx), this._dragRate());
+        const dir = this.settings.invertDrag ? 1 : -1;
+        this._nudgeTarget(-dir * this._pixelsToAngle(dy), dir * this._pixelsToAngle(dx), this._dragRate());
       }
       d.lastX = pt.x;
       d.lastY = pt.y;
@@ -1601,13 +1688,20 @@ class Orbity {
 
   _endDrag() {
     this._dragging = false;
-    this._target = null;
     const max = this.settings.maxVelocity;
     const lock = this._locks();
+    const v = { x: 0, y: 0 };
     for (const a of ["x", "y"]) {
-      let v = this.settings.paused || lock[a] ? 0 : this._measured[a];
-      if (max > 0) v = clamp(v, -max, max);
-      this.velocity[a] = v;
+      let val = this.settings.paused || lock[a] ? 0 : this._measured[a];
+      if (max > 0) val = clamp(val, -max, max);
+      v[a] = val;
+    }
+    if (this._target) {
+      this._handoff = v;
+      this.velocity.x = this.velocity.y = 0;
+    } else {
+      this.velocity.x = v.x;
+      this.velocity.y = v.y;
     }
   }
 

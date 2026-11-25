@@ -25,6 +25,7 @@ export interface OrbityOptions {
     pauseOnHover?: boolean;
     pauseOnFocus?: boolean;
     respectReducedMotion?: boolean;
+    invertDrag?: boolean;
     hoverEffect?: boolean;
     clickEffect?: boolean;
     hoverScale?: number;
