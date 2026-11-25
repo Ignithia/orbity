@@ -2,12 +2,13 @@
   "compilerOptions": {
     "target": "ES2019",
     "module": "ESNext",
+    "rootDir": ".",
     "declaration": true,
     "declarationDir": "./dist/types",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "jsx": "react-jsx",
     "skipLibCheck": true
   },

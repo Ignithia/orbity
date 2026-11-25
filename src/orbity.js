@@ -241,6 +241,7 @@ class Orbity {
     this.ctx = canvas.getContext("2d");
     if (!this.ctx) throw new Error("Orbity: could not get a 2D context.");
 
+    /** @type {import("../index").OrbityOptions} */
     this.settings = {};
     for (const [key, spec] of Object.entries(OPTION_SPECS)) {
       this.settings[key] = spec.def;
@@ -761,7 +762,7 @@ class Orbity {
     this._afterTagsChanged();
   }
 
-  /** @returns {Array<Object>} Copies of the tag data, in order. */
+  /** @returns {Array<import("../index").OrbityTag>} Copies of the tag data, in order. */
   getTags() {
     return this.tags.map((t) => this._publicTag(t));
   }
