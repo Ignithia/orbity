@@ -109,7 +109,7 @@ const OPTION_SPECS = {
   enableDrag: bool(true),
   enableClick: bool(true),
   clickNudge: bool(true),
-  pauseOnHover: bool(true),
+  pauseOnHover: bool(false),
   pauseOnFocus: bool(true),
   respectReducedMotion: bool(true),
   touchAction: str("none"),
@@ -1563,7 +1563,7 @@ class Orbity {
       if (d.active) {
         const dx = pt.x - d.lastX;
         const dy = pt.y - d.lastY;
-        this._nudgeTarget(this._pixelsToAngle(dy), -this._pixelsToAngle(dx), this._dragRate());
+        this._nudgeTarget(this._pixelsToAngle(dy), this._pixelsToAngle(dx), this._dragRate());
       }
       d.lastX = pt.x;
       d.lastY = pt.y;

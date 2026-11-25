@@ -292,9 +292,34 @@ const orbityInstance = new Orbity(canvas, {
               <td><code>autoSpin</code></td>
               <td>Boolean</td>
               <td>
-                Enables automatic spinning of the tag cloud when no interaction
-                occurs. If set to <code>false</code>, the cloud will only move
-                when interacted with.
+                Enables automatic spinning of the tag cloud. If set to
+                <code>false</code>, the cloud will only move when interacted
+                with. Spinning is disabled when the operating system requests
+                reduced motion unless
+                <code>respectReducedMotion</code> is set to <code>false</code>,
+                or when a tag has keyboard focus if
+                <code>pauseOnFocus</code> is enabled.
+              </td>
+              <td><code>true</code></td>
+            </tr>
+            <tr>
+              <td><code>pauseOnHover</code></td>
+              <td>Boolean</td>
+              <td>Pauses automatic spinning while the pointer hovers over a tag.</td>
+              <td><code>false</code></td>
+            </tr>
+            <tr>
+              <td><code>pauseOnFocus</code></td>
+              <td>Boolean</td>
+              <td>Pauses automatic spinning while a tag has keyboard focus.</td>
+              <td><code>true</code></td>
+            </tr>
+            <tr>
+              <td><code>respectReducedMotion</code></td>
+              <td>Boolean</td>
+              <td>
+                Respects the operating system's reduced-motion preference by
+                disabling automatic movement.
               </td>
               <td><code>true</code></td>
             </tr>
