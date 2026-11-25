@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 240" width="100%" height="100%">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="orbBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+
+    <linearGradient id="orbPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#4C1D95" />
+    </linearGradient>
+
+    <linearGradient id="orbCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+
+    <!-- Glowing effect for nodes -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Left: Minimalist Orbital Logo Mark -->
+  <g transform="translate(120, 120)">
+    <!-- Outer Outer Boundary Circle -->
+    <circle cx="0" cy="0" r="80" fill="none" stroke="url(#orbBlue)" stroke-width="4" opacity="0.85" />
+
+    <!-- Tilted Ellipse Orbit 1 -->
+    <ellipse cx="0" cy="0" rx="78" ry="32" fill="none" stroke="url(#orbPurple)" stroke-width="4.5" transform="rotate(-30)" />
+
+    <!-- Tilted Ellipse Orbit 2 -->
+    <ellipse cx="0" cy="0" rx="78" ry="32" fill="none" stroke="url(#orbCyan)" stroke-width="4.5" transform="rotate(30)" />
+
+    <!-- Inner Core Orbit -->
+    <circle cx="0" cy="0" r="38" fill="none" stroke="url(#orbBlue)" stroke-width="3" stroke-dasharray="6 6" opacity="0.6" />
+
+    <!-- Clean Node Dots along the paths -->
+    <circle cx="-80" cy="0" r="6" fill="#1D4ED8" />
+    <circle cx="80" cy="0" r="6" fill="#1D4ED8" />
+    
+    <circle cx="-55" cy="-45" r="7" fill="#8B5CF6" filter="url(#glow)" />
+    <circle cx="55" cy="45" r="7" fill="#8B5CF6" filter="url(#glow)" />
+
+    <circle cx="55" cy="-45" r="6.5" fill="#06B6D4" />
+    <circle cx="-55" cy="45" r="6.5" fill="#06B6D4" />
+
+    <circle cx="0" cy="-38" r="5" fill="#3B82F6" />
+    <circle cx="-32" cy="20" r="5" fill="#06B6D4" />
+    <circle cx="32" cy="20" r="5" fill="#8B5CF6" />
+  </g>
+
+  <!-- Right: Clean Typography (Side by Side) -->
+  <g transform="translate(250, 120)">
+    <!-- Title: Orbity -->
+    <text x="0" y="16" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" 
+          font-weight="800" 
+          font-size="82" 
+          fill="#0F172A" 
+          letter-spacing="-1.5">Orbity</text>
+
+    <!-- Subtitle: JS Library -->
+    <text x="4" y="54" 
+          font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" 
+          font-weight="600" 
+          font-size="28" 
+          fill="#6366F1" 
+          letter-spacing="0.5">JS Library</text>
+  </g>
+</svg>

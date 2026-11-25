@@ -14,6 +14,11 @@
   <body>
     <header>
       <div class="container">
+        <img
+        src="orbity.svg"
+        alt="Orbity.js Logo"
+        style="height: 40px; margin-right: 10px"
+      />
         <h1>Orbity.js Documentation</h1>
         <p>Your guide to creating interactive 3D tag clouds</p>
       </div>
@@ -647,8 +652,8 @@ orbityInstance.off("tagClick", onClick);
             <a href="https://github.com/Ignithia" target="_blank">GitHub</a>
           </li>
           <li>
-            <a href="https://www.ryanvdv-portfolio.be/" target="_blank"
-              >My Website</a
+            <a href="https://ignithia.be/" target="_blank"
+              >Ignithia's Portfolio</a
             >
           </li>
           <li>
@@ -671,6 +676,45 @@ orbityInstance.off("tagClick", onClick);
         burgerMenu.classList.toggle("expanded");
         navMenu.classList.toggle("expanded");
         navMenu.classList.toggle("collapsed");
+      });
+
+      // Active state based on scroll position
+      const sections = document.querySelectorAll(
+        "main section[id], main h2[id], main h3[id]"
+      );
+      const navLinks = document.querySelectorAll("nav ul li a");
+
+      function updateActiveLink() {
+        let current = "";
+
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (window.scrollY >= sectionTop - 200) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active");
+          }
+        });
+      }
+
+      window.addEventListener("scroll", updateActiveLink);
+      window.addEventListener("load", updateActiveLink);
+
+      // Close mobile menu when clicking a link
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth <= 768) {
+            burgerMenu.classList.remove("expanded");
+            navMenu.classList.remove("expanded");
+            navMenu.classList.add("collapsed");
+          }
+        });
       });
 
       const header = document.querySelector("header");
