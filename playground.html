@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,7 +10,11 @@
   <body class="playground-page">
     <header class="site-header">
       <div class="container header-content">
-        <a class="brand" href="documentation.html" aria-label="Orbity documentation">
+        <a
+          class="brand"
+          href="documentation.html"
+          aria-label="Orbity documentation"
+        >
           <img src="orbity.svg" alt="" width="56" height="56" />
           <span>Orbity<span class="brand-mark">.js</span></span>
         </a>
@@ -18,8 +22,10 @@
           <span class="eyebrow">Interactive demo</span>
           <h1>Playground</h1>
         </div>
-        <span class="version-badge">v1.1.1</span>
-        <a class="header-link" href="documentation.html">Documentation <span aria-hidden="true">↗</span></a>
+        <span class="version-badge">v1.1.2</span>
+        <a class="header-link" href="documentation.html"
+          >Documentation <span aria-hidden="true">↗</span></a
+        >
       </div>
     </header>
     <main class="playground-layout">
@@ -38,342 +44,362 @@
           height="600"
           aria-label="Interactive Orbity tag cloud preview"
         ></canvas>
-        <p id="playgroundStatus" class="status-message" role="status" aria-live="polite">
+        <p
+          id="playgroundStatus"
+          class="status-message"
+          role="status"
+          aria-live="polite"
+        >
           Ready. Adjust a setting or add a tag to get started.
         </p>
       </section>
       <div class="controls" aria-label="Playground settings">
-      <div class="controls-group">
-        <h3>General Settings</h3>
-        <label title="Adjust the radius of the tag cloud.">
-          Radius:
-          <input
-            type="range"
-            id="radiusControl"
-            min="1"
-            max="400"
-            value="200"
-          />
-        </label>
-        <label title="Select the shape of the tag cloud.">
-          Shape:
-          <select id="shapeControl">
-            <option value="sphere" selected>Sphere</option>
-            <option value="cube">Cube</option>
-            <option value="plane">Plane</option>
-            <option value="ring">Horizontal Ring</option>
-            <option value="verticalRing">Vertical Ring</option>
-            <option value="helix">Helix</option>
-            <option value="cylinder">Cylinder</option>
-            <option value="pyramid">Pyramid</option>
-            <option value="torus">Torus</option>
-          </select>
-        </label>
-        <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
-        <div id="torusSettings" hidden>
-          <h4>Torus Settings</h4>
-          <label title="Set the major radius of the torus.">
-            Major Radius:
+        <div class="controls-group">
+          <h3>General Settings</h3>
+          <label title="Adjust the radius of the tag cloud.">
+            Radius:
             <input
               type="range"
-              id="majorRadiusControl"
-              min="50"
-              max="300"
-              value="150"
+              id="radiusControl"
+              min="1"
+              max="400"
+              value="200"
             />
           </label>
-          <label title="Set the minor radius of the torus.">
-            Minor Radius:
-            <input
-              type="range"
-              id="minorRadiusControl"
-              min="10"
-              max="100"
-              value="50"
-            />
+          <label title="Select the shape of the tag cloud.">
+            Shape:
+            <select id="shapeControl">
+              <option value="sphere" selected>Sphere</option>
+              <option value="cube">Cube</option>
+              <option value="plane">Plane</option>
+              <option value="ring">Horizontal Ring</option>
+              <option value="verticalRing">Vertical Ring</option>
+              <option value="helix">Helix</option>
+              <option value="cylinder">Cylinder</option>
+              <option value="pyramid">Pyramid</option>
+              <option value="torus">Torus</option>
+            </select>
           </label>
+          <div id="shapePreview" class="shape-preview">Preview: Sphere</div>
+          <div id="torusSettings" hidden>
+            <h4>Torus Settings</h4>
+            <label title="Set the major radius of the torus.">
+              Major Radius:
+              <input
+                type="range"
+                id="majorRadiusControl"
+                min="50"
+                max="300"
+                value="150"
+              />
+            </label>
+            <label title="Set the minor radius of the torus.">
+              Minor Radius:
+              <input
+                type="range"
+                id="minorRadiusControl"
+                min="10"
+                max="100"
+                value="50"
+              />
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="controls-group">
-        <h3>Animation Settings</h3>
-        <label title="Set the rotation speed multiplier. 1 is the library default.">
-          Speed:
-          <input
-            type="range"
-            id="speedControl"
-            min="0.001"
-            max="5"
-            step="0.001"
-            value="1"
-          />
-        </label>
-        <label title="Set the maximum velocity for tag cloud rotation.">
-          Max Velocity:
-          <input
-            type="range"
-            id="maxVelocityControl"
-            min="0"
-            max="1"
-            step="0.01"
-            value="0.5"
-          />
-        </label>
-        <label title="Enable or disable auto-spin for the tag cloud.">
-          Auto Spin:
-          <input type="checkbox" id="autoSpinControl" checked />
-        </label>
-        <label title="Pause automatic rotation while the pointer hovers over a tag.">
-          Pause on Hover:
-          <input type="checkbox" id="pauseOnHoverControl" />
-        </label>
-        <label title="Pause automatic rotation while a tag has keyboard focus.">
-          Pause on Focus:
-          <input type="checkbox" id="pauseOnFocusControl" checked />
-        </label>
-        <label title="Respect the operating system's reduced-motion preference.">
-          Respect Reduced Motion:
-          <input type="checkbox" id="respectReducedMotionControl" checked />
-        </label>
-      </div>
-
-      <div class="controls-group">
-        <h3>Interaction Settings</h3>
-        <label title="Enable or disable touch interaction for the tag cloud.">
-          Enable Touch:
-          <input type="checkbox" id="enableTouchControl" checked />
-        </label>
-        <label title="Enable or disable device orientation interaction.">
-          Enable Orientation:
-          <input type="checkbox" id="enableOrientationControl" />
-        </label>
-        <label title="Enable or disable drag interaction for the tag cloud.">
-          Enable Drag:
-          <input type="checkbox" id="enableDragControl" checked />
-        </label>
-        <label title="Enable or disable click interaction for the tag cloud.">
-          Enable Click:
-          <input type="checkbox" id="enableClickControl" checked />
-        </label>
-      </div>
-
-      <div class="controls-group">
-        <h3>Tag Settings</h3>
-        <label title="Adjust the font size of the tags.">
-          Font Size:
-          <input
-            type="range"
-            id="fontSizeControl"
-            min="10"
-            max="50"
-            value="16"
-          />
-        </label>
-        <label title="Enter tag text. Use commas to add multiple tags at once.">
-          Tag Text (comma-separated for multiple tags):
-          <input
-            type="text"
-            id="tagTextInput"
-            placeholder="Enter tag text (e.g., JavaScript, HTML, CSS)"
-          />
-        </label>
-        <label title="Select the color for the tags.">
-          Tag Color:
-          <input type="color" id="tagColorInput" value="#ffffff" />
-        </label>
-        <button
-          id="addTagButton"
-          title="Add the entered tags to the tag cloud."
-        >
-          Add Tag(s)
-        </button>
-        <button
-          id="clearTagsButton"
-          title="Remove all tags from the tag cloud."
-        >
-          Clear Tags
-        </button>
-        <div id="tagPreview" class="tag-preview"></div>
-        <button id="exportTagsButton" title="Export all tags as a JSON file.">
-          Export Tags
-        </button>
-      </div>
-
-      <div class="controls-group">
-        <h3>Utility Settings</h3>
-        <button
-          id="generateCode"
-          title="Generate JavaScript code for the current configuration."
-        >
-          Generate Code
-        </button>
-        <button id="copyCodeButton" type="button" class="button-secondary">
-          Copy Code
-        </button>
-        <pre id="codeOutput" class="code-output" aria-label="Generated configuration code"></pre>
-      </div>
-
-      <div class="controls-group">
-        <h3>Hover and Click Effects</h3>
-        <label title="Enable or disable hover effects for tags.">
-          Enable Hover Effect:
-          <input type="checkbox" id="enableHoverEffectControl" checked />
-        </label>
-        <label title="Enable or disable click effects for tags.">
-          Enable Click Effect:
-          <input type="checkbox" id="enableClickEffectControl" checked />
-        </label>
-        <label title="Adjust the scale factor for hover effects.">
-          Hover Scale:
-          <input
-            type="range"
-            id="hoverScaleControl"
-            min="1"
-            max="2"
-            step="0.1"
-            value="1.2"
-          />
-        </label>
-        <label title="Select the hover color for tags.">
-          Hover Color:
-          <input type="color" id="hoverColorControl" value="#ffff00" />
-        </label>
-        <label title="Adjust the opacity for hover effects.">
-          Hover Opacity:
-          <input
-            type="range"
-            id="hoverOpacityControl"
-            min="0.1"
-            max="1"
-            step="0.1"
-            value="1.0"
-          />
-        </label>
-      </div>
-
-      <div class="controls-group">
-        <h3>Font and Style Settings</h3>
-        <label title="Select the font family for tags.">
-          Font Family:
-          <select id="fontFamilyControl">
-            <option value="sans-serif" selected>Sans-Serif</option>
-            <option value="serif">Serif</option>
-            <option value="monospace">Monospace</option>
-            <option value="cursive">Cursive</option>
-            <option value="fantasy">Fantasy</option>
-          </select>
-        </label>
-        <label title="Select the font weight for tags.">
-          Font Weight:
-          <select id="fontWeightControl">
-            <option value="normal" selected>Normal</option>
-            <option value="bold">Bold</option>
-            <option value="lighter">Lighter</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="controls-group">
-        <h3>Undo/Redo Tag Edit</h3>
-        <button id="undoButton" title="Undo the last action.">Undo</button>
-        <button id="redoButton" title="Redo the last undone action.">
-          Redo
-        </button>
-      </div>
-
-      <div class="controls-group">
-        <h3>Tag Management</h3>
-        <button id="importTagsButton" title="Import tags from a JSON file.">
-          Import Tags
-        </button>
-        <button id="resetSettingsButton" title="Reset all settings to default.">
-          Reset Settings
-        </button>
-      </div>
-
-      <div class="controls-group">
-        <h3>Configuration Management</h3>
-        <button
-          id="saveConfigButton"
-          title="Save the current configuration to a JSON file."
-        >
-          Save Configuration
-        </button>
-        <button
-          id="loadConfigButton"
-          title="Load a configuration from a JSON file."
-        >
-          Load Configuration
-        </button>
-      </div>
-
-      <div class="controls-group">
-        <h3>Easing Settings</h3>
-        <label title="Select an easing profile for animations.">
-          Easing Profile:
-          <select id="easingProfileControl">
-            <option value="Snappy">Snappy</option>
-            <option value="Smooth" selected>Smooth</option>
-            <option value="Marathon">Marathon</option>
-            <option value="Custom">Custom</option>
-          </select>
-        </label>
-        <div id="customEasingSettings" hidden>
-          <label title="Set a custom ease-in multiplier.">
-            Custom Ease-In:
+        <div class="controls-group">
+          <h3>Animation Settings</h3>
+          <label
+            title="Set the rotation speed multiplier. 1 is the library default."
+          >
+            Speed:
             <input
               type="range"
-              id="customEaseInControl"
-              min="0.05"
-              max="0.5"
-              step="0.01"
-              value="0.1"
+              id="speedControl"
+              min="0.001"
+              max="5"
+              step="0.001"
+              value="1"
             />
           </label>
-          <label title="Set a custom friction value.">
-            Custom Friction:
+          <label title="Set the maximum velocity for tag cloud rotation.">
+            Max Velocity:
             <input
               type="range"
-              id="customFrictionControl"
-              min="0.8"
+              id="maxVelocityControl"
+              min="0"
               max="1"
               step="0.01"
-              value="0.95"
+              value="0.5"
             />
           </label>
-          <label title="Set the minimum velocity threshold for easing.">
-            Min Velocity Threshold:
+          <label title="Enable or disable auto-spin for the tag cloud.">
+            Auto Spin:
+            <input type="checkbox" id="autoSpinControl" checked />
+          </label>
+          <label
+            title="Pause automatic rotation while the pointer hovers over a tag."
+          >
+            Pause on Hover:
+            <input type="checkbox" id="pauseOnHoverControl" />
+          </label>
+          <label
+            title="Pause automatic rotation while a tag has keyboard focus."
+          >
+            Pause on Focus:
+            <input type="checkbox" id="pauseOnFocusControl" checked />
+          </label>
+          <label
+            title="Respect the operating system's reduced-motion preference."
+          >
+            Respect Reduced Motion:
+            <input type="checkbox" id="respectReducedMotionControl" checked />
+          </label>
+        </div>
+
+        <div class="controls-group">
+          <h3>Interaction Settings</h3>
+          <label title="Enable or disable touch interaction for the tag cloud.">
+            Enable Touch:
+            <input type="checkbox" id="enableTouchControl" checked />
+          </label>
+          <label title="Enable or disable device orientation interaction.">
+            Enable Orientation:
+            <input type="checkbox" id="enableOrientationControl" />
+          </label>
+          <label title="Enable or disable drag interaction for the tag cloud.">
+            Enable Drag:
+            <input type="checkbox" id="enableDragControl" checked />
+          </label>
+          <label title="Enable or disable click interaction for the tag cloud.">
+            Enable Click:
+            <input type="checkbox" id="enableClickControl" checked />
+          </label>
+        </div>
+
+        <div class="controls-group">
+          <h3>Tag Settings</h3>
+          <label title="Adjust the font size of the tags.">
+            Font Size:
             <input
               type="range"
-              id="minVelocityThresholdControl"
-              min="0"
-              max="0.05"
-              step="0.0001"
-              value="0.0002"
+              id="fontSizeControl"
+              min="10"
+              max="50"
+              value="16"
+            />
+          </label>
+          <label
+            title="Enter tag text. Use commas to add multiple tags at once."
+          >
+            Tag Text (comma-separated for multiple tags):
+            <input
+              type="text"
+              id="tagTextInput"
+              placeholder="Enter tag text (e.g., JavaScript, HTML, CSS)"
+            />
+          </label>
+          <label title="Select the color for the tags.">
+            Tag Color:
+            <input type="color" id="tagColorInput" value="#ffffff" />
+          </label>
+          <button
+            id="addTagButton"
+            title="Add the entered tags to the tag cloud."
+          >
+            Add Tag(s)
+          </button>
+          <button
+            id="clearTagsButton"
+            title="Remove all tags from the tag cloud."
+          >
+            Clear Tags
+          </button>
+          <div id="tagPreview" class="tag-preview"></div>
+          <button id="exportTagsButton" title="Export all tags as a JSON file.">
+            Export Tags
+          </button>
+        </div>
+
+        <div class="controls-group">
+          <h3>Utility Settings</h3>
+          <button
+            id="generateCode"
+            title="Generate JavaScript code for the current configuration."
+          >
+            Generate Code
+          </button>
+          <button id="copyCodeButton" type="button" class="button-secondary">
+            Copy Code
+          </button>
+          <pre
+            id="codeOutput"
+            class="code-output"
+            aria-label="Generated configuration code"
+          ></pre>
+        </div>
+
+        <div class="controls-group">
+          <h3>Hover and Click Effects</h3>
+          <label title="Enable or disable hover effects for tags.">
+            Enable Hover Effect:
+            <input type="checkbox" id="enableHoverEffectControl" checked />
+          </label>
+          <label title="Enable or disable click effects for tags.">
+            Enable Click Effect:
+            <input type="checkbox" id="enableClickEffectControl" checked />
+          </label>
+          <label title="Adjust the scale factor for hover effects.">
+            Hover Scale:
+            <input
+              type="range"
+              id="hoverScaleControl"
+              min="1"
+              max="2"
+              step="0.1"
+              value="1.2"
+            />
+          </label>
+          <label title="Select the hover color for tags.">
+            Hover Color:
+            <input type="color" id="hoverColorControl" value="#ffff00" />
+          </label>
+          <label title="Adjust the opacity for hover effects.">
+            Hover Opacity:
+            <input
+              type="range"
+              id="hoverOpacityControl"
+              min="0.1"
+              max="1"
+              step="0.1"
+              value="1.0"
             />
           </label>
         </div>
-        <label title="Enable or disable auto-easing for animations.">
-          Auto Easing:
-          <input type="checkbox" id="autoEasingControl" checked />
-        </label>
-      </div>
 
-      <div class="controls-group">
-        <h3>Animation Controls</h3>
-        <button
-          id="pauseResumeButton"
-          title="Pause or resume the tag cloud animation."
-          aria-pressed="false"
-        >
-          Pause cloud
-        </button>
-      </div>
+        <div class="controls-group">
+          <h3>Font and Style Settings</h3>
+          <label title="Select the font family for tags.">
+            Font Family:
+            <select id="fontFamilyControl">
+              <option value="sans-serif" selected>Sans-Serif</option>
+              <option value="serif">Serif</option>
+              <option value="monospace">Monospace</option>
+              <option value="cursive">Cursive</option>
+              <option value="fantasy">Fantasy</option>
+            </select>
+          </label>
+          <label title="Select the font weight for tags.">
+            Font Weight:
+            <select id="fontWeightControl">
+              <option value="normal" selected>Normal</option>
+              <option value="bold">Bold</option>
+              <option value="lighter">Lighter</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="controls-group">
+          <h3>Undo/Redo Tag Edit</h3>
+          <button id="undoButton" title="Undo the last action.">Undo</button>
+          <button id="redoButton" title="Redo the last undone action.">
+            Redo
+          </button>
+        </div>
+
+        <div class="controls-group">
+          <h3>Tag Management</h3>
+          <button id="importTagsButton" title="Import tags from a JSON file.">
+            Import Tags
+          </button>
+          <button
+            id="resetSettingsButton"
+            title="Reset all settings to default."
+          >
+            Reset Settings
+          </button>
+        </div>
+
+        <div class="controls-group">
+          <h3>Configuration Management</h3>
+          <button
+            id="saveConfigButton"
+            title="Save the current configuration to a JSON file."
+          >
+            Save Configuration
+          </button>
+          <button
+            id="loadConfigButton"
+            title="Load a configuration from a JSON file."
+          >
+            Load Configuration
+          </button>
+        </div>
+
+        <div class="controls-group">
+          <h3>Easing Settings</h3>
+          <label title="Select an easing profile for animations.">
+            Easing Profile:
+            <select id="easingProfileControl">
+              <option value="Snappy">Snappy</option>
+              <option value="Smooth" selected>Smooth</option>
+              <option value="Marathon">Marathon</option>
+              <option value="Custom">Custom</option>
+            </select>
+          </label>
+          <div id="customEasingSettings" hidden>
+            <label title="Set a custom ease-in multiplier.">
+              Custom Ease-In:
+              <input
+                type="range"
+                id="customEaseInControl"
+                min="0.05"
+                max="0.5"
+                step="0.01"
+                value="0.1"
+              />
+            </label>
+            <label title="Set a custom friction value.">
+              Custom Friction:
+              <input
+                type="range"
+                id="customFrictionControl"
+                min="0.8"
+                max="1"
+                step="0.01"
+                value="0.95"
+              />
+            </label>
+            <label title="Set the minimum velocity threshold for easing.">
+              Min Velocity Threshold:
+              <input
+                type="range"
+                id="minVelocityThresholdControl"
+                min="0"
+                max="0.05"
+                step="0.0001"
+                value="0.0002"
+              />
+            </label>
+          </div>
+          <label title="Enable or disable auto-easing for animations.">
+            Auto Easing:
+            <input type="checkbox" id="autoEasingControl" checked />
+          </label>
+        </div>
+
+        <div class="controls-group">
+          <h3>Animation Controls</h3>
+          <button
+            id="pauseResumeButton"
+            title="Pause or resume the tag cloud animation."
+            aria-pressed="false"
+          >
+            Pause cloud
+          </button>
+        </div>
       </div>
     </main>
-    <footer>
-      © 2026 Orbity.js. Built for curious minds.
-    </footer>
+    <footer>© 2026 Orbity.js. Built for curious minds.</footer>
     <script src="./dist/orbity.min.js"></script>
     <script>
       const canvas = document.getElementById("orbityCanvas");
@@ -383,7 +409,7 @@
       const shapeControl = document.getElementById("shapeControl");
       const enableTouchControl = document.getElementById("enableTouchControl");
       const enableOrientationControl = document.getElementById(
-        "enableOrientationControl"
+        "enableOrientationControl",
       );
       const pauseResumeButton = document.getElementById("pauseResumeButton");
       const codeOutput = document.getElementById("codeOutput");
@@ -395,23 +421,27 @@
       const tagPreview = document.getElementById("tagPreview");
       const fontSizeControl = document.getElementById("fontSizeControl");
       const autoSpinControl = document.getElementById("autoSpinControl");
-      const pauseOnHoverControl = document.getElementById("pauseOnHoverControl");
-      const pauseOnFocusControl = document.getElementById("pauseOnFocusControl");
+      const pauseOnHoverControl = document.getElementById(
+        "pauseOnHoverControl",
+      );
+      const pauseOnFocusControl = document.getElementById(
+        "pauseOnFocusControl",
+      );
       const respectReducedMotionControl = document.getElementById(
-        "respectReducedMotionControl"
+        "respectReducedMotionControl",
       );
       const enableDragControl = document.getElementById("enableDragControl");
       const enableClickControl = document.getElementById("enableClickControl");
       const enableHoverEffectControl = document.getElementById(
-        "enableHoverEffectControl"
+        "enableHoverEffectControl",
       );
       const enableClickEffectControl = document.getElementById(
-        "enableClickEffectControl"
+        "enableClickEffectControl",
       );
       const hoverScaleControl = document.getElementById("hoverScaleControl");
       const hoverColorControl = document.getElementById("hoverColorControl");
       const hoverOpacityControl = document.getElementById(
-        "hoverOpacityControl"
+        "hoverOpacityControl",
       );
       const fontFamilyControl = document.getElementById("fontFamilyControl");
       const fontWeightControl = document.getElementById("fontWeightControl");
@@ -419,7 +449,7 @@
       const redoButton = document.getElementById("redoButton");
       const importTagsButton = document.getElementById("importTagsButton");
       const resetSettingsButton = document.getElementById(
-        "resetSettingsButton"
+        "resetSettingsButton",
       );
       const saveConfigButton = document.getElementById("saveConfigButton");
       const loadConfigButton = document.getElementById("loadConfigButton");
@@ -427,19 +457,19 @@
       const minorRadiusControl = document.getElementById("minorRadiusControl");
       const torusSettings = document.getElementById("torusSettings");
       const easingProfileControl = document.getElementById(
-        "easingProfileControl"
+        "easingProfileControl",
       );
       const customEasingSettings = document.getElementById(
-        "customEasingSettings"
+        "customEasingSettings",
       );
       const customEaseInControl = document.getElementById(
-        "customEaseInControl"
+        "customEaseInControl",
       );
       const customFrictionControl = document.getElementById(
-        "customFrictionControl"
+        "customFrictionControl",
       );
       const minVelocityThresholdControl = document.getElementById(
-        "minVelocityThresholdControl"
+        "minVelocityThresholdControl",
       );
       const autoEasingControl = document.getElementById("autoEasingControl");
       const playgroundStatus = document.getElementById("playgroundStatus");
@@ -513,7 +543,8 @@
         const tags = orbityInstance.getTags();
         tagPreview.replaceChildren();
         if (tags.length === 0) {
-          tagPreview.textContent = "No tags yet. Add a few above to get started.";
+          tagPreview.textContent =
+            "No tags yet. Add a few above to get started.";
           return;
         }
         tags.forEach((tag, index) => {
@@ -672,7 +703,7 @@
         const url = URL.createObjectURL(
           new Blob([JSON.stringify(data, null, 2)], {
             type: "application/json",
-          })
+          }),
         );
         const link = document.createElement("a");
         link.href = url;
@@ -772,7 +803,9 @@
             return;
           }
           orbityInstance.setTags(tags);
-          setStatus(`Imported ${tags.length} tag${tags.length === 1 ? "" : "s"}.`);
+          setStatus(
+            `Imported ${tags.length} tag${tags.length === 1 ? "" : "s"}.`,
+          );
         });
       });
 
