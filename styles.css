@@ -556,8 +556,11 @@ textarea:focus-visible {
 }
 
 .brand-logo {
+  width: 56px;
+  height: 56px;
   flex: 0 0 auto;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: left center;
 }
 
 .brand {
@@ -571,8 +574,10 @@ textarea:focus-visible {
 }
 
 .brand img {
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  object-position: left center;
 }
 
 .brand-mark {
@@ -1028,7 +1033,7 @@ footer ul li a {
   }
 
   .header-title {
-    flex-basis: calc(100% - 4.5rem);
+    flex-basis: calc(100% - 5rem);
   }
 
   .header-content > .version-badge {
