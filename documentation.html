@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -30,12 +30,19 @@
           <p>Build interactive, accessible 3D tag clouds.</p>
         </div>
         <span class="version-badge">v1.1.1</span>
-        <a class="header-link" href="playground.html">Open Playground <span aria-hidden="true">↗</span></a>
+        <a class="header-link" href="playground.html"
+          >Open Playground <span aria-hidden="true">↗</span></a
+        >
       </div>
     </header>
     <nav aria-label="Main navigation">
       <div class="container">
-        <button class="burger-menu" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation">
+        <button
+          class="burger-menu"
+          aria-label="Toggle navigation"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+        >
           <div class="burger-lines">
             <span></span>
             <span></span>
@@ -64,9 +71,7 @@
           various shapes, touch interactions, and device orientation, making it
           ideal for visually engaging web applications.
         </p>
-        <a href="playground.html" class="btn"
-          >Try the Playground</a
-        >
+        <a href="playground.html" class="btn">Try the Playground</a>
 
         <h2 id="features">Features</h2>
         <ul>
@@ -303,9 +308,8 @@ const orbityInstance = new Orbity(canvas, {
                 Enables automatic spinning of the tag cloud. If set to
                 <code>false</code>, the cloud will only move when interacted
                 with. Spinning is disabled when the operating system requests
-                reduced motion unless
-                <code>respectReducedMotion</code> is set to <code>false</code>,
-                or when a tag has keyboard focus if
+                reduced motion unless <code>respectReducedMotion</code> is set
+                to <code>false</code>, or when a tag has keyboard focus if
                 <code>pauseOnFocus</code> is enabled.
               </td>
               <td><code>true</code></td>
@@ -313,7 +317,9 @@ const orbityInstance = new Orbity(canvas, {
             <tr>
               <td><code>pauseOnHover</code></td>
               <td>Boolean</td>
-              <td>Pauses automatic spinning while the pointer hovers over a tag.</td>
+              <td>
+                Pauses automatic spinning while the pointer hovers over a tag.
+              </td>
               <td><code>false</code></td>
             </tr>
             <tr>
@@ -660,7 +666,8 @@ orbityInstance.off("tagClick", onClick);
               id="code-editor"
               aria-label="Orbity JavaScript example"
               spellcheck="false"
-            >window.orbityLiveDemo?.destroy();
+            >
+window.orbityLiveDemo?.destroy();
 const canvas = document.getElementById("orbityCanvas");
 window.orbityLiveDemo = new Orbity(canvas, {
   radius: 150,
@@ -672,12 +679,22 @@ window.orbityLiveDemo.setTags([
   { text: "JavaScript", color: "#f7df1e" },
   { text: "Canvas", color: "#61dafb" },
   { text: "Interactive", color: "#a78bfa" },
-]);</textarea>
+]);</textarea
+            >
             <div class="editor-actions">
-              <button id="run-code" class="btn" type="button">Run example</button>
-              <button id="reset-code" class="button-secondary" type="button">Reset example</button>
+              <button id="run-code" class="btn" type="button">
+                Run example
+              </button>
+              <button id="reset-code" class="button-secondary" type="button">
+                Reset example
+              </button>
             </div>
-            <p id="editor-status" class="status-message" role="status" aria-live="polite">
+            <p
+              id="editor-status"
+              class="status-message"
+              role="status"
+              aria-live="polite"
+            >
               The example is ready to run.
             </p>
           </div>
@@ -688,9 +705,7 @@ window.orbityLiveDemo.setTags([
             height="600"
             aria-label="Live Orbity tag cloud example"
           ></canvas>
-          <a href="playground.html" class="btn"
-            >Go to Playground</a
-          >
+          <a href="playground.html" class="btn">Go to Playground</a>
         </section>
 
         <h2 id="license">License</h2>
@@ -708,7 +723,10 @@ window.orbityLiveDemo.setTags([
         <ul>
           <li><a href="https://github.com/Ignithia">GitHub</a></li>
           <li>
-            <a href="https://ignithia.be/">Ignithia's Portfolio</a>
+            <a
+              href="https://ignithia.be/?utm_source=orbity&utm_medium=referral&utm_campaign=portfolio&utm_content=project_link"
+              >Ignithia's Portfolio</a
+            >
           </li>
           <li><a href="playground.html">Playground</a></li>
         </ul>
@@ -725,12 +743,14 @@ window.orbityLiveDemo.setTags([
           new Function("Orbity", "document", "window", editor.value)(
             window.Orbity,
             document,
-            window
+            window,
           );
           status.textContent = "Example ran successfully.";
         } catch (error) {
           const message =
-            error instanceof Error ? error.message : "Unknown JavaScript error.";
+            error instanceof Error
+              ? error.message
+              : "Unknown JavaScript error.";
           status.textContent = `Could not run example: ${message}`;
         }
       });
@@ -747,8 +767,7 @@ window.orbityLiveDemo.setTags([
       const navMenu = document.querySelector("nav ul");
 
       burgerMenu.addEventListener("click", () => {
-        const expanded =
-          burgerMenu.getAttribute("aria-expanded") === "true";
+        const expanded = burgerMenu.getAttribute("aria-expanded") === "true";
         burgerMenu.setAttribute("aria-expanded", String(!expanded));
         burgerMenu.classList.toggle("expanded", !expanded);
         navMenu.classList.toggle("expanded", !expanded);
@@ -775,12 +794,12 @@ window.orbityLiveDemo.setTags([
               navLinks.forEach((link) => {
                 link.classList.toggle(
                   "active",
-                  link.getAttribute("href") === `#${entry.target.id}`
+                  link.getAttribute("href") === `#${entry.target.id}`,
                 );
               });
             });
           },
-          { rootMargin: "-15% 0px -75% 0px" }
+          { rootMargin: "-15% 0px -75% 0px" },
         );
         navLinks.forEach((link) => {
           const href = link.getAttribute("href");
@@ -793,7 +812,7 @@ window.orbityLiveDemo.setTags([
       window.addEventListener(
         "pagehide",
         () => window.orbityLiveDemo?.destroy(),
-        { once: true }
+        { once: true },
       );
     </script>
   </body>
